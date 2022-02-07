@@ -5,6 +5,8 @@ import asyncio
 import logging
 import pyuavcan
 import pathlib
+from subscribers import EscHearbeatSubscriber, DynamicsSubscriber, PortListSubscriber, \
+                        HearbeatSubscriber, PowerSubscriber, FeedbackSubscriber
 
 compiled_dsdl_dir = pathlib.Path(__file__).resolve().parent / "compile_output"
 sys.path.insert(0, str(compiled_dsdl_dir))
@@ -22,6 +24,7 @@ try:
     import reg.udral.physics.dynamics.rotation.PlanarTs_0_1
     import reg.udral.physics.electricity.PowerTs_0_1
 
+    import uavcan.node.ExecuteCommand_1_0
     import uavcan.register.Access_1_0
     import uavcan.register.List_1_0
 except (ImportError, AttributeError):
@@ -43,17 +46,14 @@ REGISTERS_VALUES = {
     "uavcan.pub.status.id"              : 2447,
     "uavcan.pub.dynamics.id"            : 2448,
 }
-VALUE_TO_HEALTH_STRING = {
-    0 : "NOMINAL",
-    1 : "ADVISORY",
-    2 : "CAUTION",
-    3 : "WARNING"
-}
-VALUE_TO_MODE_STRING = {
-    0 : "OPERATIONAL",
-    1 : "INITIALIZATION",
-    2 : "MAINTENANCE",
-    3 : "SOFTWARE_UPDATE"
+EXECUTE_COMMAND_STATUS_TO_STRING = {
+    0 : "STATUS_SUCCESS",
+    1 : "STATUS_FAILURE",
+    2 : "STATUS_NOT_AUTHORIZED",
+    3 : "STATUS_BAD_COMMAND",
+    4 : "STATUS_BAD_PARAMETER",
+    5 : "STATUS_BAD_STATE",
+    6 : "STATUS_INTERNAL_ERROR",
 }
 
 
@@ -78,6 +78,7 @@ class App:
 
         self.rpc_client_register_access = self._node.make_client(uavcan.register.Access_1_0, DEST_NODE_ID)
         self.rpc_client_register_list = self._node.make_client(uavcan.register.List_1_0, DEST_NODE_ID)
+        self.rpc_client_execute_command = self._node.make_client(uavcan.node.ExecuteCommand_1_0, DEST_NODE_ID)
 
     async def run(self) -> None:
         """
@@ -85,6 +86,12 @@ class App:
         """
 
         await self._get_registers()
+
+        COMMAND_STORE_PERSISTENT_STATES = 65530
+        await self.call_execute_command(COMMAND_STORE_PERSISTENT_STATES)
+        COMMAND_RESTART = 65535
+        await self.call_execute_command(COMMAND_RESTART)
+
         await self._start_pub_and_sub()
 
         print("waiting 15 seconds...")
@@ -128,64 +135,14 @@ class App:
         """
         Initialize all subscribers and publishers which are avaliable on the destination node.
         """
-        async def print_callback(msg, _):
-            print(msg)
-        async def on_heartbeat_callback(msg: uavcan.node.Heartbeat_1_0, _: pyuavcan.transport.TransferFrom) -> None:
-            print("sub: Heartbeat: {}, {}, {}, {}".format(msg.uptime,
-                                                     VALUE_TO_HEALTH_STRING[msg.health.value],
-                                                     VALUE_TO_MODE_STRING[msg.mode.value],
-                                                     msg.vendor_specific_status_code))
-        async def on_port_list(msg: uavcan.node.Heartbeat_1_0, _: pyuavcan.transport.TransferFrom) -> None:
-            """
-            Last time response was:
-            - pub 7509:     uavcan.node.Heartbeat.1.0
-            - pub 7510:     uavcan.node.port.List.0.1
-            - server 384:   uavcan.register.Access.1.0
-            - server 385:   uavcan.register.List.1.0
-            - server 430:   uavcan.node.GetInfo.1.0
-            - server 435:   uavcan.node.ExecuteCommand 1.0 or 1.1?
-            """
-            publishers = []
-            subscribers = []
-            cliens = []
-            servers = []
-
-            if msg.publishers.sparse_list is not None:
-                for port in msg.publishers.sparse_list:
-                    publishers.append(port.value)
-            if msg.subscribers.sparse_list is not None:
-                for port in msg.subscribers.sparse_list:
-                    subscribers.append(port.value)
-            for idx in (range(len(msg.clients.mask))):
-                if msg.clients.mask[idx]:
-                    cliens.append(idx)
-            for idx in (range(len(msg.servers.mask))):
-                if msg.servers.mask[idx]:
-                    servers.append(idx)
-            print("sub: Port.List: {}, {}, {}, {}".format(\
-                "\n    - pub: {}".format(publishers),
-                "\n    - sub on: {}".format(subscribers),
-                "\n    - clients: {}".format(cliens),
-                "\n    - servers: {}".format(servers)))
-
-        self._sub_port_list = self._node.make_subscriber(uavcan.node.port.List_0_1, "port")
-        self._sub_port_list.receive_in_background(on_port_list)
-
-        self._sub_heartbeat = self._node.make_subscriber(uavcan.node.Heartbeat_1_0, "heartbeat")
-        self._sub_heartbeat.receive_in_background(on_heartbeat_callback)
-
-        self._sub_esc_heartbeat = self._node.make_subscriber(reg.udral.service.common.Heartbeat_0_1, "esc_heartbeat")
-        self._sub_esc_heartbeat.receive_in_background(print_callback)
-
-        self._sub_feedback = self._node.make_subscriber(reg.udral.service.actuator.common.Feedback_0_1, "feedback")
-        self._sub_feedback.receive_in_background(print_callback)
-
-        self._sub_power = self._node.make_subscriber(reg.udral.physics.electricity.PowerTs_0_1, "power")
-        self._sub_power.receive_in_background(print_callback)
-
-        self._sub_dynamics = self._node.make_subscriber(reg.udral.physics.dynamics.rotation.PlanarTs_0_1, "dynamics")
-        self._sub_dynamics.receive_in_background(print_callback)
-
+        self.subs = [
+            EscHearbeatSubscriber(self._node),
+            PowerSubscriber(self._node),
+            PortListSubscriber(self._node),
+            HearbeatSubscriber(self._node),
+            FeedbackSubscriber(self._node),
+            DynamicsSubscriber(self._node),
+        ]
 
         self._pub_note_response = self._node.make_publisher(reg.udral.physics.acoustics.Note_0_1, "note_response")
         self.note_response_pub_task = asyncio.create_task(
@@ -229,13 +186,22 @@ class App:
 
     async def call_register_list(self, index=0):
         """
-        uavcan.register.List
+        uavcan.register.List_1_0
         """
         req = uavcan.register.List_1_0.Request(index)
         response = await self.rpc_client_register_list.call(req)
         if response is not None:
             response = App.np_array_to_string(response[0].name.name)
         return response
+
+    async def call_execute_command(self, cmd):
+        """
+        uavcan.node.ExecuteCommand_1_0
+        """
+        req = uavcan.node.ExecuteCommand_1_0.Request(cmd)
+        response = await self.rpc_client_execute_command.call(req)
+        if response is not None:
+            print(EXECUTE_COMMAND_STATUS_TO_STRING[response[0].status])
 
     async def call_register_access(self, register_name, set_value=None):
         """
