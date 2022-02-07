@@ -29,7 +29,7 @@ except (ImportError, AttributeError):
     exit()
 
 
-DEST_NODE_ID = 119
+DEST_NODE_ID = 116
 REGISTER_FILE = "allocation_table.db"
 
 REGISTERS_VALUES = {
@@ -149,10 +149,13 @@ class App:
             subscribers = []
             cliens = []
             servers = []
-            for port in msg.publishers.sparse_list:
-                publishers.append(port.value)
-            for port in msg.subscribers.sparse_list:
-                subscribers.append(port.value)
+
+            if msg.publishers.sparse_list is not None:
+                for port in msg.publishers.sparse_list:
+                    publishers.append(port.value)
+            if msg.subscribers.sparse_list is not None:
+                for port in msg.subscribers.sparse_list:
+                    subscribers.append(port.value)
             for idx in (range(len(msg.clients.mask))):
                 if msg.clients.mask[idx]:
                     cliens.append(idx)
