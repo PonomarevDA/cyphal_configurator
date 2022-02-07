@@ -7,6 +7,7 @@ import pyuavcan
 import pathlib
 from subscribers import EscHearbeatSubscriber, DynamicsSubscriber, PortListSubscriber, \
                         HearbeatSubscriber, PowerSubscriber, FeedbackSubscriber
+from publishers import NoteResponsePublisher, SetpointPublisher, ReadinessPublisher
 
 compiled_dsdl_dir = pathlib.Path(__file__).resolve().parent / "compile_output"
 sys.path.insert(0, str(compiled_dsdl_dir))
@@ -15,14 +16,6 @@ try:
     import pyuavcan.application
     import uavcan.node
     import uavcan.node.port.List_0_1
-
-    import reg.udral.service.actuator.common.Feedback_0_1
-    import reg.udral.service.actuator.common.sp.Scalar_0_1
-    import reg.udral.service.common.Readiness_0_1
-    import reg.udral.service.common.Heartbeat_0_1
-    import reg.udral.physics.acoustics.Note_0_1
-    import reg.udral.physics.dynamics.rotation.PlanarTs_0_1
-    import reg.udral.physics.electricity.PowerTs_0_1
 
     import uavcan.node.ExecuteCommand_1_0
     import uavcan.register.Access_1_0
@@ -36,15 +29,15 @@ DEST_NODE_ID = 116
 REGISTER_FILE = "allocation_table.db"
 
 REGISTERS_VALUES = {
-    "id_in_esc_group"                   : 1,
-    "uavcan.sub.note_response.id"       : 2341,
-    "uavcan.sub.setpoint.id"            : 2342,
-    "uavcan.sub.readiness.id"           : 2343,
-    "uavcan.pub.esc_heartbeat.id"       : 2344,
-    "uavcan.pub.feedback.id"            : 2345,
-    "uavcan.pub.power.id"               : 2346,
-    "uavcan.pub.status.id"              : 2447,
-    "uavcan.pub.dynamics.id"            : 2448,
+    # "id_in_esc_group"                   : 1,
+    # "uavcan.sub.note_response.id"       : 2341,
+    # "uavcan.sub.setpoint.id"            : 2342,
+    # "uavcan.sub.readiness.id"           : 2343,
+    # "uavcan.pub.esc_heartbeat.id"       : 2344,
+    # "uavcan.pub.feedback.id"            : 2345,
+    # "uavcan.pub.power.id"               : 2346,
+    # "uavcan.pub.status.id"              : 2447,
+    # "uavcan.pub.dynamics.id"            : 2448,
 }
 EXECUTE_COMMAND_STATUS_TO_STRING = {
     0 : "STATUS_SUCCESS",
@@ -87,10 +80,10 @@ class App:
 
         await self._get_registers()
 
-        COMMAND_STORE_PERSISTENT_STATES = 65530
-        await self.call_execute_command(COMMAND_STORE_PERSISTENT_STATES)
-        COMMAND_RESTART = 65535
-        await self.call_execute_command(COMMAND_RESTART)
+        # COMMAND_STORE_PERSISTENT_STATES = 65530
+        # await self.call_execute_command(COMMAND_STORE_PERSISTENT_STATES)
+        # COMMAND_RESTART = 65535
+        # await self.call_execute_command(COMMAND_RESTART)
 
         await self._start_pub_and_sub()
 
@@ -136,53 +129,20 @@ class App:
         Initialize all subscribers and publishers which are avaliable on the destination node.
         """
         self.subs = [
-            EscHearbeatSubscriber(self._node),
-            PowerSubscriber(self._node),
-            PortListSubscriber(self._node),
-            HearbeatSubscriber(self._node),
-            FeedbackSubscriber(self._node),
-            DynamicsSubscriber(self._node),
+            HearbeatSubscriber(self._node),     # 7509
+            PortListSubscriber(self._node),     # 7510
+            EscHearbeatSubscriber(self._node),  # 2344  empty on kotleta
+            FeedbackSubscriber(self._node),     # 2345
+            PowerSubscriber(self._node),        # 2346
+            # status                            # 2347  not implemented yet
+            DynamicsSubscriber(self._node),     # 2348
         ]
 
-        self._pub_note_response = self._node.make_publisher(reg.udral.physics.acoustics.Note_0_1, "note_response")
-        self.note_response_pub_task = asyncio.create_task(
-            self.note_response_pub()
-        )
-
-        self._pub_setpoint = self._node.make_publisher(reg.udral.service.actuator.common.sp.Scalar_0_1, "setpoint")
-        self.setpoint_pub_task = asyncio.create_task(
-            self.setpoint_pub()
-        )
-
-        self._pub_readiness = self._node.make_publisher(reg.udral.service.common.Readiness_0_1, "readiness")
-        self.readiness_pub_task = asyncio.create_task(
-            self.readiness_pub()
-        )
-
-    async def note_response_pub(self):
-        while True:
-            await asyncio.sleep(0.5)
-
-    async def setpoint_pub(self):
-        """
-        reg.udral.service.actuator.common.sp.Scalar_0_1
-        """
-        while True:
-            await asyncio.sleep(0.05)
-            await self._pub_setpoint.publish(reg.udral.service.actuator.common.sp.Scalar_0_1(0))
-
-    async def readiness_pub(self):
-        """
-        reg.udral.service.common.Readiness_0_1
-        """
-        while True:
-            await asyncio.sleep(0.5)
-            SLEEP = 0
-            STANDBY = 2
-            ENGAGED = 3
-            await self._pub_readiness.publish(reg.udral.service.common.Readiness_0_1(STANDBY))
-            print("pub: STANDBY")
-
+        self.pubs = [
+            NoteResponsePublisher(self._node),  # 2341
+            SetpointPublisher(self._node),      # 2342
+            ReadinessPublisher(self._node),     # 2343
+        ]
 
     async def call_register_list(self, index=0):
         """

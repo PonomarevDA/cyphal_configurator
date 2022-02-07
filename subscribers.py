@@ -40,20 +40,25 @@ class BaseSubscriber:
     def __init__(self, node, data_type, name) -> None:
         self._sub = node.make_subscriber(data_type, name)
         self._sub.receive_in_background(self.callback)
+
     async def callback(self, msg, _):
         print(msg)
+
 
 class EscHearbeatSubscriber(BaseSubscriber):
     def __init__(self, node, name="esc_heartbeat") -> None:
         super().__init__(node, reg.udral.service.common.Heartbeat_0_1, name)
 
+
 class DynamicsSubscriber(BaseSubscriber):
     def __init__(self, node, name="dynamics") -> None:
         super().__init__(node, reg.udral.physics.dynamics.rotation.PlanarTs_0_1, name)
 
+
 class PortListSubscriber(BaseSubscriber):
     def __init__(self, node, name="port") -> None:
-        super().__init__(node=node, data_type=uavcan.node.port.List_0_1, name=name)
+        super().__init__(node, uavcan.node.port.List_0_1, name)
+
     async def callback(self, msg, _) -> None:
         """
         Last time response was:
@@ -87,9 +92,11 @@ class PortListSubscriber(BaseSubscriber):
             "\n    - clients: {}".format(cliens),
             "\n    - servers: {}".format(servers)))
 
+
 class HearbeatSubscriber(BaseSubscriber):
     def __init__(self, node, name="heartbeat") -> None:
         super().__init__(node, uavcan.node.Heartbeat_1_0, name)
+
     async def callback(self, msg, _) -> None:
             print("sub: (Heartbeat: {}, {}, {}, {})".format(\
                 msg.uptime,
@@ -97,17 +104,21 @@ class HearbeatSubscriber(BaseSubscriber):
                 VALUE_TO_MODE_STRING[msg.mode.value],
                 msg.vendor_specific_status_code))
 
+
 class PowerSubscriber(BaseSubscriber):
     def __init__(self, node, name="power") -> None:
         super().__init__(node, reg.udral.physics.electricity.PowerTs_0_1, name)
+
     async def callback(self, msg, _):
         print("sub: Power (current={}, voltage={})".format(\
             msg.value.current.ampere,
             msg.value.voltage.volt))
 
+
 class FeedbackSubscriber(BaseSubscriber):
     def __init__(self, node, name="feedback") -> None:
         super().__init__(node, reg.udral.service.actuator.common.Feedback_0_1, name)
+
     async def callback(self, msg, _):
         print("sub: Feedback (readiness={}, health={}, vdemand_factor_pct={})".format(\
             msg.heartbeat.readiness.value,
