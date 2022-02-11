@@ -6,7 +6,7 @@ import logging
 import pyuavcan
 import pathlib
 from subscribers import EscHearbeatSubscriber, DynamicsSubscriber, PortListSubscriber, \
-                        HearbeatSubscriber, PowerSubscriber, FeedbackSubscriber
+                        HearbeatSubscriber, StatusSubscriber, PowerSubscriber, FeedbackSubscriber
 from publishers import NoteResponsePublisher, SetpointPublisher, ReadinessPublisher
 
 compiled_dsdl_dir = pathlib.Path(__file__).resolve().parent / "compile_output"
@@ -60,6 +60,7 @@ class RegisterTableCell:
 class ServerNode:
     def __init__(self) -> None:
         self.subs = {}
+        self.pubs = {}
 
     def run_async(self) -> None:
         asyncio.run(self._main())
@@ -74,13 +75,24 @@ class ServerNode:
             return self.subs["power"].current
         return None
 
+    def get_readiness(self):
+        if "feedback" in self.subs:
+            return self.subs["feedback"].readiness
+        return None
+
+    def get_health(self):
+        if "feedback" in self.subs:
+            return self.subs["feedback"].health
+        return None
+
     def get_demand_factor_pct(self):
         if "feedback" in self.subs:
             return self.subs["feedback"].demand_factor_pct
         return None
 
-    def set_setpoint(self):
-        pass
+    def set_setpoint(self, value):
+        if "setpoint" in self.pubs:
+            return self.pubs["setpoint"].set_value(value)
 
     async def _main(self) -> None:
         try:
@@ -120,8 +132,8 @@ class ServerNode:
 
         await self._start_pub_and_sub()
 
-        print("waiting 15 seconds...")
-        await asyncio.sleep(15)
+        while True:
+            await asyncio.sleep(10)
 
     async def _get_registers(self):
         """
@@ -167,15 +179,15 @@ class ServerNode:
             "esc_heartbeat" : EscHearbeatSubscriber(self._node),    # 2344  empty on kotleta
             "feedback"      : FeedbackSubscriber(self._node),       # 2345
             "power"         : PowerSubscriber(self._node),          # 2346
-            # status                                                # 2347  not implemented yet
-            "heartbeat"     : DynamicsSubscriber(self._node),       # 2348
+            "status"        : StatusSubscriber(self._node),         # 2347
+            "dynamics"      : DynamicsSubscriber(self._node),       # 2348
         }
 
-        self.pubs = [
-            NoteResponsePublisher(self._node),  # 2341
-            SetpointPublisher(self._node),      # 2342
-            ReadinessPublisher(self._node),     # 2343
-        ]
+        self.pubs = {
+            "note_response": NoteResponsePublisher(self._node),     # 2341
+            "setpoint"     : SetpointPublisher(self._node),         # 2342
+            "readiness"    : ReadinessPublisher(self._node),        # 2343
+        }
 
     async def call_register_list(self, index=0):
         """

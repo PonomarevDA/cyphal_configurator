@@ -15,6 +15,7 @@ import reg.udral.service.common.Readiness_0_1
 import reg.udral.service.common.Heartbeat_0_1
 import reg.udral.physics.acoustics.Note_0_1
 import reg.udral.physics.dynamics.rotation.PlanarTs_0_1
+import reg.udral.service.actuator.common.Status_0_1
 import reg.udral.physics.electricity.PowerTs_0_1
 
 import uavcan.node.ExecuteCommand_1_0
@@ -54,6 +55,9 @@ class DynamicsSubscriber(BaseSubscriber):
     def __init__(self, node, name="dynamics") -> None:
         super().__init__(node, reg.udral.physics.dynamics.rotation.PlanarTs_0_1, name)
 
+class StatusSubscriber(BaseSubscriber):
+    def __init__(self, node, name="status") -> None:
+        super().__init__(node, reg.udral.service.actuator.common.Status_0_1, name)
 
 class PortListSubscriber(BaseSubscriber):
     def __init__(self, node, name="port") -> None:
@@ -114,23 +118,37 @@ class PowerSubscriber(BaseSubscriber):
     async def callback(self, msg, _):
         self.current = msg.value.current.ampere
         self.voltage = msg.value.voltage.volt
-        print("sub: Power (current={}, voltage={})".format(\
-            self.current,
-            self.voltage))
 
 
 class FeedbackSubscriber(BaseSubscriber):
+    READINESS_TO_STR = {
+        0   : "SLEEP",
+        1   : "INVALID",
+        2   : "STANDBY",
+        3   : "ENGAGED",
+    }
+    HEALTH_TO_STR = {
+        0   : "NOMINAL",
+        1   : "ADVISORY",
+        2   : "CAUTION",
+        3   : "WARNING",
+    }
     def __init__(self, node, name="feedback") -> None:
         super().__init__(node, reg.udral.service.actuator.common.Feedback_0_1, name)
-        self.heartbeat = None
-        self.health = None
+        self.readiness = "-"
+        self.health = "-"
         self.demand_factor_pct = None
 
+
     async def callback(self, msg, _):
-        self.heartbeat = msg.heartbeat.readiness.value
-        self.health = msg.heartbeat.health.value
+        if msg.heartbeat.readiness.value in FeedbackSubscriber.READINESS_TO_STR:
+            self.readiness = FeedbackSubscriber.READINESS_TO_STR[msg.heartbeat.readiness.value]
+        else:
+            self.readiness = "-"
+
+        if msg.heartbeat.health.value in FeedbackSubscriber.HEALTH_TO_STR:
+            self.health = FeedbackSubscriber.HEALTH_TO_STR[msg.heartbeat.health.value]
+        else:
+            self.health = "-"
+
         self.demand_factor_pct = msg.demand_factor_pct
-        print("sub: Feedback (readiness={}, health={}, demand_factor_pct={})".format(\
-            self.heartbeat,
-            self.health,
-            self.demand_factor_pct))

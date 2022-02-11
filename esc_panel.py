@@ -71,7 +71,7 @@ class SetpointWidget(QWidget):
         if value is None:
             value_str = "-"
         else:
-            value_str = "{:.1f}".format(value)
+            value_str = "{:.3f}".format(value)
         self._current.setText("power.current: {} A".format(value_str))
 
     def set_readiness(self, value_str=None):
@@ -100,7 +100,7 @@ class EscPanel(QWidget):
         self.layout.setSpacing(10)
 
         self.channels = []
-        for channel_idx in range(4):
+        for channel_idx in range(1):
             sp = SetpointWidget()
             self.channels.append(sp)
             self.layout.addWidget(sp, 0, channel_idx)
@@ -112,11 +112,14 @@ class EscPanel(QWidget):
         self.feedback_timer.start(1000)
 
     def timer_event(self):
-        self.feedback_timer.start(100)
+        self.feedback_timer.start(10)
 
         self.channels[0].set_voltage(self.server_node.get_voltage())
         self.channels[0].set_current(self.server_node.get_current())
+        self.channels[0].set_readiness(self.server_node.get_readiness())
+        self.channels[0].set_health(self.server_node.get_health())
         self.channels[0].set_demand_factor(self.server_node.get_demand_factor_pct())
+        self.server_node.set_setpoint(self.channels[0].get_setpoint() / 100)
 
 
 class ServerNodeThread(QThread):

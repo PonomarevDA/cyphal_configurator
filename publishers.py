@@ -42,11 +42,15 @@ class NoteResponsePublisher(BasePublisher):
 class SetpointPublisher(BasePublisher):
     def __init__(self, node, name="setpoint") -> None:
         super().__init__(node, reg.udral.service.actuator.common.sp.Scalar_0_1, name)
+        self.value = 0
+
+    def set_value(self, new_value):
+        self.value = new_value
 
     async def pub_task(self):
         while True:
-            await asyncio.sleep(0.05)
-            await self._pub.publish(self.data_type(0))
+            await asyncio.sleep(0.005)
+            await self._pub.publish(self.data_type(self.value))
 
 
 class ReadinessPublisher(BasePublisher):
@@ -55,9 +59,9 @@ class ReadinessPublisher(BasePublisher):
 
     async def pub_task(self):
         while True:
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(1)
             SLEEP = 0
             STANDBY = 2
             ENGAGED = 3
-            await self._pub.publish(self.data_type(STANDBY))
-            print("pub: STANDBY")
+            await self._pub.publish(self.data_type(ENGAGED))
+            print("pub: ENGAGED")
