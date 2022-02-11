@@ -108,19 +108,29 @@ class HearbeatSubscriber(BaseSubscriber):
 class PowerSubscriber(BaseSubscriber):
     def __init__(self, node, name="power") -> None:
         super().__init__(node, reg.udral.physics.electricity.PowerTs_0_1, name)
+        self.current = None
+        self.voltage = None
 
     async def callback(self, msg, _):
+        self.current = msg.value.current.ampere
+        self.voltage = msg.value.voltage.volt
         print("sub: Power (current={}, voltage={})".format(\
-            msg.value.current.ampere,
-            msg.value.voltage.volt))
+            self.current,
+            self.voltage))
 
 
 class FeedbackSubscriber(BaseSubscriber):
     def __init__(self, node, name="feedback") -> None:
         super().__init__(node, reg.udral.service.actuator.common.Feedback_0_1, name)
+        self.heartbeat = None
+        self.health = None
+        self.demand_factor_pct = None
 
     async def callback(self, msg, _):
-        print("sub: Feedback (readiness={}, health={}, vdemand_factor_pct={})".format(\
-            msg.heartbeat.readiness.value,
-            msg.heartbeat.health.value,
-            msg.demand_factor_pct))
+        self.heartbeat = msg.heartbeat.readiness.value
+        self.health = msg.heartbeat.health.value
+        self.demand_factor_pct = msg.demand_factor_pct
+        print("sub: Feedback (readiness={}, health={}, demand_factor_pct={})".format(\
+            self.heartbeat,
+            self.health,
+            self.demand_factor_pct))

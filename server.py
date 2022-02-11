@@ -57,8 +57,41 @@ class RegisterTableCell:
         self.value = value
 
 
-class App:
+class ServerNode:
     def __init__(self) -> None:
+        self.subs = {}
+
+    def run_async(self) -> None:
+        asyncio.run(self._main())
+
+    def get_voltage(self):
+        if "power" in self.subs:
+            return self.subs["power"].voltage
+        return None
+
+    def get_current(self):
+        if "power" in self.subs:
+            return self.subs["power"].current
+        return None
+
+    def get_demand_factor_pct(self):
+        if "feedback" in self.subs:
+            return self.subs["feedback"].demand_factor_pct
+        return None
+
+    def set_setpoint(self):
+        pass
+
+    async def _main(self) -> None:
+        try:
+            await self._init()
+            await self._run()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            self.close()
+
+    async def _init(self) -> None:
         node_info = uavcan.node.GetInfo_1_0.Response(
             software_version=uavcan.node.Version_1_0(major=1, minor=0),
             name="server_app",
@@ -73,7 +106,7 @@ class App:
         self.rpc_client_register_list = self._node.make_client(uavcan.register.List_1_0, DEST_NODE_ID)
         self.rpc_client_execute_command = self._node.make_client(uavcan.node.ExecuteCommand_1_0, DEST_NODE_ID)
 
-    async def run(self) -> None:
+    async def _run(self) -> None:
         """
         The main method that runs the business logic.
         """
@@ -128,15 +161,15 @@ class App:
         """
         Initialize all subscribers and publishers which are avaliable on the destination node.
         """
-        self.subs = [
-            HearbeatSubscriber(self._node),     # 7509
-            PortListSubscriber(self._node),     # 7510
-            EscHearbeatSubscriber(self._node),  # 2344  empty on kotleta
-            FeedbackSubscriber(self._node),     # 2345
-            PowerSubscriber(self._node),        # 2346
-            # status                            # 2347  not implemented yet
-            DynamicsSubscriber(self._node),     # 2348
-        ]
+        self.subs = {
+            "heartbeat"     : HearbeatSubscriber(self._node),       # 7509
+            "port_list"     : PortListSubscriber(self._node),       # 7510
+            "esc_heartbeat" : EscHearbeatSubscriber(self._node),    # 2344  empty on kotleta
+            "feedback"      : FeedbackSubscriber(self._node),       # 2345
+            "power"         : PowerSubscriber(self._node),          # 2346
+            # status                                                # 2347  not implemented yet
+            "heartbeat"     : DynamicsSubscriber(self._node),       # 2348
+        }
 
         self.pubs = [
             NoteResponsePublisher(self._node),  # 2341
@@ -151,7 +184,7 @@ class App:
         req = uavcan.register.List_1_0.Request(index)
         response = await self.rpc_client_register_list.call(req)
         if response is not None:
-            response = App.np_array_to_string(response[0].name.name)
+            response = ServerNode.np_array_to_string(response[0].name.name)
         return response
 
     async def call_execute_command(self, cmd):
@@ -185,7 +218,7 @@ class App:
                 read_value = read_value.natural16.value[0]
                 data_type = "natural16"
             elif read_value.string is not None:
-                read_value = App.np_array_to_string(read_value.string.value)
+                read_value = ServerNode.np_array_to_string(read_value.string.value)
                 data_type = "string"
             elif read_value.bit is not None:
                 read_value = read_value.bit.value[0]
@@ -218,16 +251,7 @@ class App:
         self._node.close()
 
 
-async def main() -> None:
-    logging.root.setLevel(logging.INFO)
-    app = App()
-    try:
-        await app.run()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        app.close()
-
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    logging.root.setLevel(logging.INFO)
+    server_node = ServerNode()
+    server_node.run_async()
