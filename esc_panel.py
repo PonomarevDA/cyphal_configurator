@@ -1,13 +1,15 @@
 #!/usr/bin/env python3.7
 import sys
-import time
-import PyQt5
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QSlider, QVBoxLayout, QHBoxLayout, QGridLayout, QTextEdit, QSpinBox, QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QSlider, QVBoxLayout, QHBoxLayout, QGridLayout, QSpinBox, QHBoxLayout
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QTimer, QThread
 from server import ServerNode
 
-class SetpointWidget(QWidget):
+
+NUMBER_OF_ESC = 4
+
+
+class EscWidget(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -100,10 +102,10 @@ class EscPanel(QWidget):
         self.layout.setSpacing(10)
 
         self.channels = []
-        for channel_idx in range(1):
-            sp = SetpointWidget()
-            self.channels.append(sp)
-            self.layout.addWidget(sp, 0, channel_idx)
+        for channel_idx in range(NUMBER_OF_ESC):
+            esc = EscWidget()
+            self.channels.append(esc)
+            self.layout.addWidget(esc, 0, channel_idx)
 
         self.setLayout(self.layout)
 

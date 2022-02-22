@@ -11,6 +11,7 @@ import uavcan.node.port.List_0_1
 
 import reg.udral.service.actuator.common.Feedback_0_1
 import reg.udral.service.actuator.common.sp.Scalar_0_1
+import reg.udral.service.actuator.common.sp.Vector2_0_1
 import reg.udral.service.common.Readiness_0_1
 import reg.udral.service.common.Heartbeat_0_1
 import reg.udral.physics.acoustics.Note_0_1
@@ -41,11 +42,11 @@ class NoteResponsePublisher(BasePublisher):
 
 class SetpointPublisher(BasePublisher):
     def __init__(self, node, name="setpoint") -> None:
-        super().__init__(node, reg.udral.service.actuator.common.sp.Scalar_0_1, name)
+        super().__init__(node, reg.udral.service.actuator.common.sp.Vector2_0_1, name)
         self.value = 0
 
     def set_value(self, new_value):
-        self.value = new_value
+        self.value = [new_value, new_value]
 
     async def pub_task(self):
         while True:

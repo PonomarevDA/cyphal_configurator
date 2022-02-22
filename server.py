@@ -25,7 +25,7 @@ except (ImportError, AttributeError):
     exit()
 
 
-DEST_NODE_ID = 116
+DEST_NODE_ID = 116 #42
 REGISTER_FILE = "allocation_table.db"
 
 REGISTERS_VALUES = {
@@ -149,7 +149,7 @@ class ServerNode:
                         is_it_last_parameter = True
                     break
                 elif attemp_counter == NUMBER_OF_ATTEMPTS - 1:
-                    print("error")
+                    print("ERR: RegisterList has been failed 100 times")
                     break
                 await asyncio.sleep(0.01)
             if is_it_last_parameter:
@@ -157,10 +157,9 @@ class ServerNode:
 
             new_value = REGISTERS_VALUES[register_name] if register_name in REGISTERS_VALUES else None
             read_value, data_type = await self.call_register_access(register_name, new_value)
-
             if read_value is None:
-                print("error")
-                continue
+                print("ERR: RegisterAccess has been failed")
+                break
 
             self.register_table[register_name] = RegisterTableCell(index, data_type, read_value)
 
@@ -245,15 +244,21 @@ class ServerNode:
                 read_value = "Empty"
                 data_type = "empty"
             else:
+                print("ERR: RegisterAccess unknown data_type", read_value)
                 read_value = None
         else:
+            print("ERR: RegisterAccess response is None")
             read_value = None
 
         return read_value, data_type
 
     @staticmethod
     def np_array_to_string(arr):
-        return str(arr.tobytes().decode("utf-8"))
+        try:
+            return str(arr.tobytes().decode("utf-8"))
+        except UnicodeDecodeError:
+            print("UnicodeDecodeError")
+            return "??UnicodeDecodeError??"
 
     def close(self) -> None:
         """
