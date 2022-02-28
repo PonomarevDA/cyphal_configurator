@@ -39,17 +39,43 @@ VALUE_TO_MODE_STRING = {
 
 class BaseSubscriber:
     def __init__(self, node, data_type, name) -> None:
-        self._sub = node.make_subscriber(data_type, name)
+        self._node = node
+        self._data_type = data_type
+        self._name = name
+
+    def init(self):
+        self._sub = self._node.make_subscriber(self._data_type, self._name)
         self._sub.receive_in_background(self.callback)
 
     async def callback(self, msg, _):
-        print(msg)
+        pass
+        # print(msg)
+
+
+class SetpointSubscriber(BaseSubscriber):
+    def __init__(self, node, name="setpoint") -> None:
+        super().__init__(node, reg.udral.service.actuator.common.sp.Vector4_0_1, name)
+        self.value = [None, None, None, None]
+
+    async def callback(self, msg, _) -> None:
+        self.value = msg.value
+
+class ReadinessSubscriber(BaseSubscriber):
+    def __init__(self, node, name="readiness") -> None:
+        super().__init__(node, reg.udral.service.common.Readiness_0_1, name)
+        self.value = None
+
+    async def callback(self, msg, _) -> None:
+        self.value = msg.value
 
 
 class EscHearbeatSubscriber(BaseSubscriber):
     def __init__(self, node, name="esc_heartbeat") -> None:
         super().__init__(node, reg.udral.service.common.Heartbeat_0_1, name)
+        self.msg = None
 
+    async def callback(self, msg, _) -> None:
+        self.msg = msg
 
 class DynamicsSubscriber(BaseSubscriber):
     def __init__(self, node, name="dynamics") -> None:
@@ -102,12 +128,7 @@ class HearbeatSubscriber(BaseSubscriber):
         super().__init__(node, uavcan.node.Heartbeat_1_0, name)
 
     async def callback(self, msg, _) -> None:
-            print("sub: (Heartbeat: {}, {}, {}, {})".format(\
-                msg.uptime,
-                VALUE_TO_HEALTH_STRING[msg.health.value],
-                VALUE_TO_MODE_STRING[msg.mode.value],
-                msg.vendor_specific_status_code))
-
+        pass
 
 class PowerSubscriber(BaseSubscriber):
     def __init__(self, node, name="power") -> None:

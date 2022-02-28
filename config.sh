@@ -17,6 +17,8 @@ export UAVCAN__NODE__ID=127
 export ALLOCATION_TABLE_PATH=allocation_table.db
 
 # Todo: identifiers should be defined dynamicly in future
+
+# Server node port id:
 export UAVCAN__PUB__NOTE_RESPONSE__ID=2341
 export UAVCAN__PUB__SETPOINT__ID=2342
 export UAVCAN__PUB__READINESS__ID=2343
@@ -25,3 +27,13 @@ export UAVCAN__SUB__FEEDBACK__ID=2345
 export UAVCAN__SUB__POWER__ID=2346
 export UAVCAN__SUB__STATUS__ID=2347
 export UAVCAN__SUB__DYNAMICS__ID=2348
+
+# Kotleta mock port id:
+export UAVCAN__SUB__NOTE_RESPONSE__ID=2341
+export UAVCAN__SUB__SETPOINT__ID=2342
+export UAVCAN__SUB__READINESS__ID=2343
+export UAVCAN__PUB__ESC_HEARTBEAT__ID=2344
+export UAVCAN__PUB__FEEDBACK__ID=2345
+export UAVCAN__PUB__POWER__ID=2346
+export UAVCAN__PUB__STATUS__ID=2347
+export UAVCAN__PUB__DYNAMICS__ID=2348

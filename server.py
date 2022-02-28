@@ -83,9 +83,9 @@ class ServerNode:
             return self.subs["feedback"].demand_factor_pct
         return None
 
-    def set_setpoint(self, value):
+    def set_setpoint(self, value, esc_idx=0):
         if "setpoint" in self.pubs:
-            return self.pubs["setpoint"].set_value(value)
+            return self.pubs["setpoint"].set_value(value, esc_idx=esc_idx)
 
     async def _main(self) -> None:
         try:
@@ -94,7 +94,7 @@ class ServerNode:
         except KeyboardInterrupt:
             pass
         finally:
-            self.close()
+            self._close()
 
     async def _init(self) -> None:
         node_info = uavcan.node.GetInfo_1_0.Response(
@@ -103,7 +103,7 @@ class ServerNode:
         )
         self._node = pyuavcan.application.make_node(node_info, REGISTER_FILE)
         self._node.heartbeat_publisher.mode = uavcan.node.Mode_1_0.OPERATIONAL
-        self._node.heartbeat_publisher.vendor_specific_status_code = os.getpid() % 100
+        self._node.heartbeat_publisher.vendor_specific_status_code = 10
         self._node.start()
         self.register_table = dict()
 
@@ -166,6 +166,8 @@ class ServerNode:
             "status"        : StatusSubscriber(self._node),         # 2347
             "dynamics"      : DynamicsSubscriber(self._node),       # 2348
         }
+        for sub in self.subs:
+            self.subs[sub].init()
 
         self.pubs = {
             "note_response": NoteResponsePublisher(self._node),     # 2341
@@ -173,7 +175,7 @@ class ServerNode:
             "readiness"    : ReadinessPublisher(self._node),        # 2343
         }
 
-    def close(self) -> None:
+    def _close(self) -> None:
         """
         This will close all the underlying resources down to the transport interface and all publishers/servers/etc.
         All pending tasks such as serve_in_background()/receive_in_background() will notice this and exit automatically.

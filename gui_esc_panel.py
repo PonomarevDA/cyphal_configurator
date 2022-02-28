@@ -121,7 +121,8 @@ class EscPanel(QWidget):
         self.channels[0].set_readiness(self.server_node.get_readiness())
         self.channels[0].set_health(self.server_node.get_health())
         self.channels[0].set_demand_factor(self.server_node.get_demand_factor_pct())
-        self.server_node.set_setpoint(self.channels[0].get_setpoint() / 100)
+        for esc_idx in range(4):
+            self.server_node.set_setpoint(self.channels[esc_idx].get_setpoint() / 100, esc_idx=esc_idx)
 
 
 class ServerNodeThread(QThread):
