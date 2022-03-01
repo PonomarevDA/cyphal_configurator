@@ -51,7 +51,7 @@ class SetpointPublisher(BasePublisher):
 
     async def pub_task(self):
         while True:
-            await asyncio.sleep(0.005)
+            await asyncio.sleep(0.002)
             await self._pub.publish(self.data_type(self.value))
 
 
@@ -61,12 +61,11 @@ class ReadinessPublisher(BasePublisher):
 
     async def pub_task(self):
         while True:
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.1)
             SLEEP = 0
             STANDBY = 2
             ENGAGED = 3
             await self._pub.publish(self.data_type(ENGAGED))
-            print("pub: ENGAGED")
 
 
 class DynamicsPublisher(BasePublisher):

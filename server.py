@@ -28,19 +28,45 @@ except (ImportError, AttributeError):
     exit()
 
 
-DEST_NODE_ID = 42 #116
+DEST_NODE_ID = 123
 REGISTER_FILE = "allocation_table.db"
 
 REGISTERS_VALUES = {
-    # "id_in_esc_group"                   : 1,
     # "uavcan.sub.note_response.id"       : 2341,
     # "uavcan.sub.setpoint.id"            : 2342,
     # "uavcan.sub.readiness.id"           : 2343,
+
+    # 116
+    # "id_in_esc_group"                   : 0,
+    # "uavcan.sub.esc_heartbeat.id"       : 2354,
+    # "uavcan.pub.feedback.id"            : 2355,
+    # "uavcan.pub.power.id"               : 2356,
+    # "uavcan.pub.status.id"              : 2457,
+    # "uavcan.pub.dynamics.id"            : 2458,
+
+    # 125
+    # "id_in_esc_group"                   : 1,
     # "uavcan.sub.esc_heartbeat.id"       : 2344,
     # "uavcan.pub.feedback.id"            : 2345,
     # "uavcan.pub.power.id"               : 2346,
     # "uavcan.pub.status.id"              : 2447,
     # "uavcan.pub.dynamics.id"            : 2448,
+
+    # 124
+    # "id_in_esc_group"                   : 2,
+    # "uavcan.sub.esc_heartbeat.id"       : 2364,
+    # "uavcan.pub.feedback.id"            : 2365,
+    # "uavcan.pub.power.id"               : 2366,
+    # "uavcan.pub.status.id"              : 2467,
+    # "uavcan.pub.dynamics.id"            : 2468,
+
+    # 123
+    # "id_in_esc_group"                   : 3,
+    # "uavcan.sub.esc_heartbeat.id"       : 2374,
+    # "uavcan.pub.feedback.id"            : 2375,
+    # "uavcan.pub.power.id"               : 2376,
+    # "uavcan.pub.status.id"              : 2477,
+    # "uavcan.pub.dynamics.id"            : 2478,
 }
 
 class RegisterTableCell:
@@ -119,10 +145,11 @@ class ServerNode:
 
         await self._get_registers()
 
-        # COMMAND_STORE_PERSISTENT_STATES = 65530
-        # await self._rpc_client_execute_command._call(COMMAND_STORE_PERSISTENT_STATES)
-        # COMMAND_RESTART = 65535
-        # await self._rpc_client_execute_command._call(COMMAND_RESTART)
+        if len(REGISTERS_VALUES) != 0:
+            COMMAND_STORE_PERSISTENT_STATES = 65530
+            await self._rpc_client_execute_command._call(COMMAND_STORE_PERSISTENT_STATES)
+            COMMAND_RESTART = 65535
+            await self._rpc_client_execute_command._call(COMMAND_RESTART)
 
         await self._start_pub_and_sub()
 

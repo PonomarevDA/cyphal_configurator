@@ -130,7 +130,7 @@ class RpcClientExecuteCommand(BaseRpcClient):
 
     async def _call(self, cmd):
         req = uavcan.node.ExecuteCommand_1_0.Request(cmd)
-        response = await self.rpc_client_execute_command.call(req)
+        response = await self._rpc_client.call(req)
         if response is not None:
             print(RpcClientExecuteCommand.EXECUTE_COMMAND_STATUS_TO_STRING[response[0].status])
 

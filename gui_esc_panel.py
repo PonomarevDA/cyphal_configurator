@@ -116,13 +116,14 @@ class EscPanel(QWidget):
     def timer_event(self):
         self.feedback_timer.start(10)
 
-        self.channels[0].set_voltage(self.server_node.get_voltage())
-        self.channels[0].set_current(self.server_node.get_current())
-        self.channels[0].set_readiness(self.server_node.get_readiness())
-        self.channels[0].set_health(self.server_node.get_health())
-        self.channels[0].set_demand_factor(self.server_node.get_demand_factor_pct())
         for esc_idx in range(4):
-            self.server_node.set_setpoint(self.channels[esc_idx].get_setpoint() / 100, esc_idx=esc_idx)
+            self.channels[esc_idx].set_voltage(self.server_node.get_voltage())
+            self.channels[esc_idx].set_current(self.server_node.get_current())
+            self.channels[esc_idx].set_readiness(self.server_node.get_readiness())
+            self.channels[esc_idx].set_health(self.server_node.get_health())
+            self.channels[esc_idx].set_demand_factor(self.server_node.get_demand_factor_pct())
+            max_rpm = 1000
+            self.server_node.set_setpoint(max_rpm * self.channels[esc_idx].get_setpoint() / 100, esc_idx=esc_idx)
 
 
 class ServerNodeThread(QThread):
