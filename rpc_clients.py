@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.7
 
+from multiprocessing.connection import wait
 import sys
 import asyncio
 import pathlib
@@ -31,8 +32,14 @@ def np_array_to_string(arr):
 class BaseRpcClient:
     def __init__(self, source_node, destination_node_id, data_type) -> None:
         self._node = source_node
+        self._data_type = data_type
         self._destination_node_id = destination_node_id
-        self._rpc_client = self._node.make_client(data_type, destination_node_id)
+        self._rpc_client = self._node.make_client(self._data_type, destination_node_id)
+
+    async def init_with_specific_node_id(self, destination_node_id):
+        self._destination_node_id = destination_node_id
+        self._rpc_client = self._node.make_client(self._data_type, destination_node_id)
+
     def _call(self):
         pass
 
@@ -70,17 +77,20 @@ class RpcClientRegisterAccess(BaseRpcClient):
     def __init__(self, node, destination_node_id) -> None:
         super().__init__(node, destination_node_id, uavcan.register.Access_1_0)
 
-    async def _call(self, register_name, set_value=None):
-        if set_value is None:
-            req = uavcan.register.Access_1_0.Request(uavcan.register.Name_1_0(register_name))
-        else:
-            new_value = uavcan.register.Value_1_0()
-            new_value.natural16 = uavcan.primitive.array.Natural16_1_0(set_value)
-            req = uavcan.register.Access_1_0.Request(\
-                uavcan.register.Name_1_0(register_name),
-                new_value)
+    async def _call(self, register_name_string, set_value=None, num_of_max_attempts=10):
+        register_name = uavcan.register.Name_1_0(register_name_string)
 
-        response = await self._rpc_client.call(req)
+        if set_value is None:
+            req = RpcClientRegisterAccess.make_read_request(register_name)
+        else:
+            req = RpcClientRegisterAccess.make_write_request(register_name, set_value)
+
+        for attempt in range(num_of_max_attempts):
+            response = await self._rpc_client.call(req)
+            if response is not None:
+                break
+            await asyncio.sleep(0.1)
+
         data_type = "Unknown"
         if response is not None:
             read_value = response[0].value
@@ -110,6 +120,25 @@ class RpcClientRegisterAccess(BaseRpcClient):
             read_value = None
 
         return read_value, data_type
+
+    @staticmethod
+    def make_read_request(register_name):
+        return uavcan.register.Access_1_0.Request(register_name)
+
+    @staticmethod
+    def make_write_request(register_name, set_value):
+        new_value = uavcan.register.Value_1_0()
+
+        if type(set_value) == uavcan.primitive.array.Natural16_1_0:
+            new_value.natural16 = set_value
+        elif type(set_value) == uavcan.primitive.array.Integer64_1_0:
+            new_value.integer64 = set_value
+        elif type(set_value) == uavcan.primitive.array.Bit_1_0:
+            new_value.bit = set_value
+        else:
+            print("ERR. Can't create write request.")
+
+        return uavcan.register.Access_1_0.Request(register_name, new_value)
 
 
 class RpcClientExecuteCommand(BaseRpcClient):

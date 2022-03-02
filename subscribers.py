@@ -116,19 +116,24 @@ class PortListSubscriber(BaseSubscriber):
         for idx in (range(len(msg.servers.mask))):
             if msg.servers.mask[idx]:
                 servers.append(idx)
-        print("sub: Port.List: {}, {}, {}, {}".format(\
-            "\n    - pub: {}".format(publishers),
-            "\n    - sub on: {}".format(subscribers),
-            "\n    - clients: {}".format(cliens),
-            "\n    - servers: {}".format(servers)))
+        # print("sub: Port.List: {}, {}, {}, {}".format(\
+        #     "\n    - pub: {}".format(publishers),
+        #     "\n    - sub on: {}".format(subscribers),
+        #     "\n    - clients: {}".format(cliens),
+        #     "\n    - servers: {}".format(servers)))
 
 
 class HearbeatSubscriber(BaseSubscriber):
     def __init__(self, node, name="heartbeat") -> None:
         super().__init__(node, uavcan.node.Heartbeat_1_0, name)
+        self.nodes_avaliable = set()
 
-    async def callback(self, msg, _) -> None:
-        pass
+    async def callback(self, msg, transfer_info) -> None:
+        self.nodes_avaliable.add(transfer_info.source_node_id)
+
+    async def get_avaliable_nodes(self) -> None:
+        return self.nodes_avaliable
+
 
 class PowerSubscriber(BaseSubscriber):
     def __init__(self, node, name="power") -> None:

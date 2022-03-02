@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QSlider, QVBoxLayout, QHBoxLayout, QGridLayout, QSpinBox, QHBoxLayout
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QTimer, QThread
-from server import ServerNode
+from server import ServerNodeFrontend
 
 
 NUMBER_OF_ESC = 4
@@ -117,20 +117,19 @@ class EscPanel(QWidget):
         self.feedback_timer.start(10)
 
         for esc_idx in range(4):
-            self.channels[esc_idx].set_voltage(self.server_node.get_voltage())
-            self.channels[esc_idx].set_current(self.server_node.get_current())
-            self.channels[esc_idx].set_readiness(self.server_node.get_readiness())
-            self.channels[esc_idx].set_health(self.server_node.get_health())
-            self.channels[esc_idx].set_demand_factor(self.server_node.get_demand_factor_pct())
-            max_rpm = 1000
-            self.server_node.set_setpoint(max_rpm * self.channels[esc_idx].get_setpoint() / 100, esc_idx=esc_idx)
+            self.channels[esc_idx].set_voltage(self.server_node.get_voltage(esc_idx))
+            self.channels[esc_idx].set_current(self.server_node.get_current(esc_idx))
+            self.channels[esc_idx].set_readiness(self.server_node.get_readiness(esc_idx))
+            self.channels[esc_idx].set_health(self.server_node.get_health(esc_idx))
+            self.channels[esc_idx].set_demand_factor(self.server_node.get_demand_factor_pct(esc_idx))
+            self.server_node.set_setpoint(self.channels[esc_idx].get_setpoint() / 100, esc_idx=esc_idx)
 
 
 class ServerNodeThread(QThread):
     mysignal = QtCore.pyqtSignal(str)
     def  __init__(self, parent=None):
         QThread.__init__(self, parent)
-        self.server_node = ServerNode()
+        self.server_node = ServerNodeFrontend()
     def run(self):
         self.server_node.run_async()
 
