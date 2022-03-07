@@ -144,9 +144,9 @@ class ServerNode:
         for avaliable_node in avaliable_nodes:
 
             if avaliable_node in SPECIFIC_REGISTER_VALUES:
-                print("{} is beining processed...".format(avaliable_node))
-                registers_values = {**COMMON_KOTLETA_REGISTERS_VALUES, **SPECIFIC_REGISTER_VALUES[avaliable_node]}
-                await self._read_and_write_registers(registers_values, avaliable_node)
+                print("Node={}. Writing to registers is in process...".format(avaliable_node))
+                write_registers_values = {**COMMON_KOTLETA_REGISTERS_VALUES, **SPECIFIC_REGISTER_VALUES[avaliable_node]}
+                await self._read_and_write_registers(write_registers_values, avaliable_node)
 
                 if len(COMMON_KOTLETA_REGISTERS_VALUES) != 0:
                     await self._rpc_client_execute_command.init_with_specific_node_id(avaliable_node)
@@ -154,7 +154,12 @@ class ServerNode:
                     await self._rpc_client_execute_command._call(COMMAND_RESTART)
 
             else:
-                print("Unknown node {}".format(avaliable_node))
+                print("Node={}. Reading of registers is in process...".format(avaliable_node))
+                write_registers_values = {}
+                await self._read_and_write_registers(write_registers_values, avaliable_node)
+
+        print("Scanning is done.")
+
         while True:
             await asyncio.sleep(10)
 
@@ -240,9 +245,9 @@ class ServerNode:
             self.subs[sub].init()
 
         self.pubs = {
-            "note_response": NoteResponsePublisher(self._node),     # 2341  dynamic
-            "setpoint"     : SetpointPublisher(self._node),         # 2342  dynamic
-            "readiness"    : ReadinessPublisher(self._node),        # 2343  dynamic
+            "note_response": NoteResponsePublisher(self._node, enable_by_default=True),        # 2341  dynamic
+            "setpoint"     : SetpointPublisher(self._node, enable_by_default=True),            # 2342  dynamic
+            "readiness"    : ReadinessPublisher(self._node, enable_by_default=True),           # 2343  dynamic
         }
 
     def _close(self) -> None:

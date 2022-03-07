@@ -5,7 +5,8 @@ import logging
 import pyuavcan
 import pathlib
 from subscribers import SetpointSubscriber, ReadinessSubscriber, HearbeatSubscriber
-from publishers import DynamicsPublisher, PowerPublisher, ReadinessPublisher
+from publishers import DynamicsPublisher, PowerPublisher, FeedbackPublisher, StatusPublisher
+from datetime import datetime
 
 
 compiled_dsdl_dir = pathlib.Path(__file__).resolve().parent / "compile_output"
@@ -68,19 +69,32 @@ class KotletaMock:
         """
 
         self.subs = {
-            "heartbeat"     : HearbeatSubscriber(self._node),
-            "setpoint"      : SetpointSubscriber(self._node),
-            "readiness"     : ReadinessSubscriber(self._node),
+            "heartbeat"         : HearbeatSubscriber(self._node),
+            "setpoint"          : SetpointSubscriber(self._node),
+            "readiness"         : ReadinessSubscriber(self._node),
         }
 
-        self.pubs = {
-            "dynamics"      : DynamicsPublisher(self._node),
-            "power"         : PowerPublisher(self._node),
-        }
+        dynamics_topic = "dynamics_{}".format(self.esc_idx + 1)
+        power_topic = "power_{}".format(self.esc_idx + 1)
+        feedback_topic = "feedback_{}".format(self.esc_idx + 1)
+        status_topic = "status_{}".format(self.esc_idx + 1)
 
-        for sub in self.subs:
-            self.subs[sub].init()
+        try:
+            self.pubs = {
+                "dynamics"      : DynamicsPublisher(self._node, name=dynamics_topic),
+                "power"         : PowerPublisher(self._node, name=power_topic),
+                "feedback"      : FeedbackPublisher(self._node, name=feedback_topic),
+                "status"        : StatusPublisher(self._node, name=status_topic),
+            }
 
+            self.pubs["power"].set_value(current=0.1  + 0.1*self.esc_idx,
+                                         voltage=12.1 + 0.1*self.esc_idx)
+            self.pubs["dynamics"].set_value(radian_per_second=10 + 10*self.esc_idx)
+
+            for sub in self.subs:
+                self.subs[sub].init()
+        except Exception as ex:
+            print("KotletaMock", self.esc_idx, ex)
 
     def _close(self) -> None:
         """
@@ -88,6 +102,30 @@ class KotletaMock:
         All pending tasks such as serve_in_background()/receive_in_background() will notice this and exit automatically.
         """
         self._node.close()
+
+
+def log_data(kotletas):
+    setpoints = [0, 0, 0, 0]
+    readiness = [0, 0, 0, 0]
+
+    voltages = [0, 0, 0, 0]
+    currents = [0, 0, 0, 0]
+
+    for kotleta in kotletas:
+        esc_idx = kotleta.esc_idx
+        setpoints[esc_idx] = kotleta.subs["setpoint"].value[esc_idx]
+        readiness[esc_idx] = kotleta.subs["readiness"].value
+        voltages[esc_idx] = kotleta.pubs["power"].msg.value.voltage.volt
+        currents[esc_idx] = kotleta.pubs["power"].msg.value.current.ampere
+
+    print("{} {}={}, {}={}, {}={}, {}={}".format(\
+            datetime.now().strftime("%H:%M:%S"),
+            "sp", setpoints,
+            "rd", readiness,
+            "volt", voltages,
+            "crnt", currents
+        )
+    )
 
 
 async def main():
@@ -103,12 +141,7 @@ async def main():
     # log smth periodically
     while True:
         await asyncio.sleep(1)
-        setpoints = []
-        readiness = []
-        for kotleta in kotletas:
-            setpoints.append(kotleta.subs["setpoint"].value[kotleta.esc_idx])
-            readiness.append(kotleta.subs["readiness"].value)
-        print("setpoints={}, readiness={}".format(setpoints, readiness))
+        log_data(kotletas)
 
 if __name__ == "__main__":
     logging.root.setLevel(logging.INFO)
