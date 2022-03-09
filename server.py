@@ -45,9 +45,11 @@ COMMON_KOTLETA_REGISTERS_VALUES = {
 }
 
 ESC_REGISTER_VALUES_1 = {
+    **COMMON_KOTLETA_REGISTERS_VALUES,
     "id_in_esc_group"                   : uavcan.primitive.array.Natural16_1_0(0),
     "ctl_dir"                           : uavcan.primitive.array.Integer64_1_0(0),
-    "uavcan.sub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(2374),
+
+    "uavcan.pub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(2374),
     "uavcan.pub.feedback.id"            : uavcan.primitive.array.Natural16_1_0(2375),
     "uavcan.pub.power.id"               : uavcan.primitive.array.Natural16_1_0(2376),
     "uavcan.pub.status.id"              : uavcan.primitive.array.Natural16_1_0(2477),
@@ -55,9 +57,11 @@ ESC_REGISTER_VALUES_1 = {
 }
 
 ESC_REGISTER_VALUES_2 = {
+    **COMMON_KOTLETA_REGISTERS_VALUES,
     "id_in_esc_group"                   : uavcan.primitive.array.Natural16_1_0(1),
     "ctl_dir"                           : uavcan.primitive.array.Integer64_1_0(1),      # wrong connection?
-    "uavcan.sub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(2354),
+
+    "uavcan.pub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(2354),
     "uavcan.pub.feedback.id"            : uavcan.primitive.array.Natural16_1_0(2355),
     "uavcan.pub.power.id"               : uavcan.primitive.array.Natural16_1_0(2356),
     "uavcan.pub.status.id"              : uavcan.primitive.array.Natural16_1_0(2357),
@@ -65,9 +69,11 @@ ESC_REGISTER_VALUES_2 = {
 }
 
 ESC_REGISTER_VALUES_3 = {
+    **COMMON_KOTLETA_REGISTERS_VALUES,
     "id_in_esc_group"                   : uavcan.primitive.array.Natural16_1_0(2),
     "ctl_dir"                           : uavcan.primitive.array.Integer64_1_0(1),
-    "uavcan.sub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(2364),
+
+    "uavcan.pub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(2364),
     "uavcan.pub.feedback.id"            : uavcan.primitive.array.Natural16_1_0(2365),
     "uavcan.pub.power.id"               : uavcan.primitive.array.Natural16_1_0(2366),
     "uavcan.pub.status.id"              : uavcan.primitive.array.Natural16_1_0(2467),
@@ -75,13 +81,45 @@ ESC_REGISTER_VALUES_3 = {
 }
 
 ESC_REGISTER_VALUES_4 = {
+    **COMMON_KOTLETA_REGISTERS_VALUES,
     "id_in_esc_group"                   : uavcan.primitive.array.Natural16_1_0(3),
     "ctl_dir"                           : uavcan.primitive.array.Integer64_1_0(1),
-    "uavcan.sub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(2344),
+
+    "uavcan.pub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(2344),
     "uavcan.pub.feedback.id"            : uavcan.primitive.array.Natural16_1_0(2345),
     "uavcan.pub.power.id"               : uavcan.primitive.array.Natural16_1_0(2346),
     "uavcan.pub.status.id"              : uavcan.primitive.array.Natural16_1_0(2447),
     "uavcan.pub.dynamics.id"            : uavcan.primitive.array.Natural16_1_0(2448),
+}
+
+AUTOPILOT_REGISTER_VALUES = {
+    "uavcan.pub.note_response.id"       : uavcan.primitive.array.Natural16_1_0(2341),
+    "uavcan.pub.setpoint.id"            : uavcan.primitive.array.Natural16_1_0(2342),
+    "uavcan.pub.readiness.id"           : uavcan.primitive.array.Natural16_1_0(2343),
+
+    "uavcan.pub.esc_heartbeat.0.id"     : uavcan.primitive.array.Natural16_1_0(2344),
+    "uavcan.sub.feedback.0.id"          : uavcan.primitive.array.Natural16_1_0(2345),
+    "uavcan.sub.power.0.id"             : uavcan.primitive.array.Natural16_1_0(2346),
+    "uavcan.sub.status.0.id"            : uavcan.primitive.array.Natural16_1_0(2447),
+    "uavcan.sub.dynamics.0.id"          : uavcan.primitive.array.Natural16_1_0(2448),
+
+    "uavcan.pub.esc_heartbeat.1.id"     : uavcan.primitive.array.Natural16_1_0(2374),
+    "uavcan.sub.feedback.1.id"          : uavcan.primitive.array.Natural16_1_0(2375),
+    "uavcan.sub.power.1.id"             : uavcan.primitive.array.Natural16_1_0(2376),
+    "uavcan.sub.status.1.id"            : uavcan.primitive.array.Natural16_1_0(2477),
+    "uavcan.sub.dynamics.1.id"          : uavcan.primitive.array.Natural16_1_0(2478),
+
+    "uavcan.pub.esc_heartbeat.2.id"     : uavcan.primitive.array.Natural16_1_0(2364),
+    "uavcan.sub.feedback.2.id"          : uavcan.primitive.array.Natural16_1_0(2365),
+    "uavcan.sub.power.2.id"             : uavcan.primitive.array.Natural16_1_0(2366),
+    "uavcan.sub.status.2.id"            : uavcan.primitive.array.Natural16_1_0(2467),
+    "uavcan.sub.dynamics.2.id"          : uavcan.primitive.array.Natural16_1_0(2468),
+
+    "uavcan.pub.esc_heartbeat.3.id"     : uavcan.primitive.array.Natural16_1_0(2344),
+    "uavcan.sub.feedback.3.id"          : uavcan.primitive.array.Natural16_1_0(2345),
+    "uavcan.sub.power.3.id"             : uavcan.primitive.array.Natural16_1_0(2346),
+    "uavcan.sub.status.3.id"            : uavcan.primitive.array.Natural16_1_0(2447),
+    "uavcan.sub.dynamics.3.id"          : uavcan.primitive.array.Natural16_1_0(2448),
 }
 
 
@@ -90,6 +128,7 @@ SPECIFIC_REGISTER_VALUES = {
     # 116 :   ESC_REGISTER_VALUES_2,      # rear left, CCW
     # 124 :   ESC_REGISTER_VALUES_3,      # front left, CW
     # 125 :   ESC_REGISTER_VALUES_4,      # rear right, CW
+    42:     AUTOPILOT_REGISTER_VALUES,
 }
 
 class RegisterTableCell:
@@ -145,7 +184,7 @@ class ServerNode:
 
             if avaliable_node in SPECIFIC_REGISTER_VALUES:
                 print("Node={}. Writing to registers is in process...".format(avaliable_node))
-                write_registers_values = {**COMMON_KOTLETA_REGISTERS_VALUES, **SPECIFIC_REGISTER_VALUES[avaliable_node]}
+                write_registers_values = SPECIFIC_REGISTER_VALUES[avaliable_node]
                 await self._read_and_write_registers(write_registers_values, avaliable_node)
 
                 if len(COMMON_KOTLETA_REGISTERS_VALUES) != 0:
