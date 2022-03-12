@@ -2,6 +2,7 @@
 import sys
 import logging
 import pathlib
+import time
 
 compiled_dsdl_dir = pathlib.Path(__file__).resolve().parent / "compile_output"
 sys.path.insert(0, str(compiled_dsdl_dir))
@@ -56,18 +57,52 @@ class SetpointSubscriber(BaseSubscriber):
     def __init__(self, node, name="setpoint") -> None:
         super().__init__(node, reg.udral.service.actuator.common.sp.Vector4_0_1, name)
         self.value = [None, None, None, None]
+        self.msg_counter = 0
+        self.recv_timestamp_ms = 0
+        self.time_between_msgs = 0
+        self.max_time_between_msgs = 0
 
     async def callback(self, msg, _) -> None:
         self.value = msg.value
+        self.msg_counter += 1
+        self.time_between_msgs = time.time() - self.recv_timestamp_ms
+        self.recv_timestamp_ms = time.time()
+        if self.time_between_msgs > self.max_time_between_msgs:
+            self.max_time_between_msgs = self.time_between_msgs
+
+    def get_number_of_rx_msgs(self):
+        return self.msg_counter
+
+    def update_max_time_between_msgs(self):
+        max_time_between_msgs = self.max_time_between_msgs
+        self.max_time_between_msgs = 0
+        return max_time_between_msgs
+
 
 class ReadinessSubscriber(BaseSubscriber):
     def __init__(self, node, name="readiness") -> None:
         super().__init__(node, reg.udral.service.common.Readiness_0_1, name)
         self.value = None
+        self.msg_counter = 0
+        self.recv_timestamp_ms = 0
+        self.time_between_msgs = 0
+        self.max_time_between_msgs = 0
 
     async def callback(self, msg, _) -> None:
         self.value = msg.value
+        self.msg_counter += 1
+        self.time_between_msgs = time.time() - self.recv_timestamp_ms
+        self.recv_timestamp_ms = time.time()
+        if self.time_between_msgs > self.max_time_between_msgs:
+            self.max_time_between_msgs = self.time_between_msgs
 
+    def get_number_of_rx_msgs(self):
+        return self.msg_counter
+
+    def update_max_time_between_msgs(self):
+        max_time_between_msgs = self.max_time_between_msgs
+        self.max_time_between_msgs = 0
+        return max_time_between_msgs
 
 class EscHearbeatSubscriber(BaseSubscriber):
     def __init__(self, node, name="esc_heartbeat") -> None:

@@ -51,6 +51,14 @@ class NoteResponsePublisher(BasePublisher):
     def __init__(self, node, name="note_response", enable_by_default=True) -> None:
         super().__init__(node, reg.udral.physics.acoustics.Note_0_1, name, enable_by_default)
 
+    async def pub_task(self):
+        while True:
+            await asyncio.sleep(1)
+            msg = reg.udral.physics.acoustics.Note_0_1()
+            msg.frequency.hertz = 1000
+            msg.duration.second = 0.01
+            msg.acoustic_power.watt = 0.0005
+            await self._pub.publish(msg)
 
 class SetpointPublisher(BasePublisher):
     def __init__(self, node, name="setpoint", enable_by_default=True) -> None:
@@ -144,7 +152,8 @@ class StatusPublisher(BasePublisher):
         self.msg.controller_temperature.kelvin = 301
         super().__init__(node, reg.udral.service.actuator.common.Status_0_1, name, enable_by_default)
 
-    def set_value(self):
+    def set_motor_temperature(self, temperature_kelvin):
+        self.msg.motor_temperature.kelvin = temperature_kelvin
         pass
 
     async def pub_task(self):

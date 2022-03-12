@@ -38,9 +38,10 @@ DEST_NODE_ID = 123
 REGISTER_FILE = "allocation_table.db"
 
 COMMON_KOTLETA_REGISTERS_VALUES = {
-    "uavcan.sub.note_response.id"       : uavcan.primitive.array.Natural16_1_0(2341),
-    "uavcan.sub.setpoint.id"            : uavcan.primitive.array.Natural16_1_0(2342),
-    "uavcan.sub.readiness.id"           : uavcan.primitive.array.Natural16_1_0(2343),
+    "uavcan.sub.note_response.id"       : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__SUB__NOTE_RESPONSE__ID']),
+    "uavcan.sub.setpoint.id"            : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__SUB__SETPOINT__ID']),
+    "uavcan.sub.readiness.id"           : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__SUB__READINESS__ID']),
+    "ttl_milliseconds"                  : uavcan.primitive.array.Integer64_1_0(100),
     "control_mode_rpm"                  : uavcan.primitive.array.Bit_1_0(False)
 }
 
@@ -49,11 +50,11 @@ ESC_REGISTER_VALUES_1 = {
     "id_in_esc_group"                   : uavcan.primitive.array.Natural16_1_0(0),
     "ctl_dir"                           : uavcan.primitive.array.Integer64_1_0(0),
 
-    "uavcan.pub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(2374),
-    "uavcan.pub.feedback.id"            : uavcan.primitive.array.Natural16_1_0(2375),
-    "uavcan.pub.power.id"               : uavcan.primitive.array.Natural16_1_0(2376),
-    "uavcan.pub.status.id"              : uavcan.primitive.array.Natural16_1_0(2477),
-    "uavcan.pub.dynamics.id"            : uavcan.primitive.array.Natural16_1_0(2478),
+    "uavcan.pub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__ESC_HEARTBEAT_1__ID']),
+    "uavcan.pub.feedback.id"            : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__FEEDBACK_1__ID']),
+    "uavcan.pub.power.id"               : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__POWER_1__ID']),
+    "uavcan.pub.status.id"              : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__STATUS_1__ID']),
+    "uavcan.pub.dynamics.id"            : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__DYNAMICS_1__ID']),
 }
 
 ESC_REGISTER_VALUES_2 = {
@@ -61,11 +62,11 @@ ESC_REGISTER_VALUES_2 = {
     "id_in_esc_group"                   : uavcan.primitive.array.Natural16_1_0(1),
     "ctl_dir"                           : uavcan.primitive.array.Integer64_1_0(1),      # wrong connection?
 
-    "uavcan.pub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(2354),
-    "uavcan.pub.feedback.id"            : uavcan.primitive.array.Natural16_1_0(2355),
-    "uavcan.pub.power.id"               : uavcan.primitive.array.Natural16_1_0(2356),
-    "uavcan.pub.status.id"              : uavcan.primitive.array.Natural16_1_0(2357),
-    "uavcan.pub.dynamics.id"            : uavcan.primitive.array.Natural16_1_0(2358),
+    "uavcan.pub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__ESC_HEARTBEAT_2__ID']),
+    "uavcan.pub.feedback.id"            : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__FEEDBACK_2__ID']),
+    "uavcan.pub.power.id"               : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__POWER_2__ID']),
+    "uavcan.pub.status.id"              : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__STATUS_2__ID']),
+    "uavcan.pub.dynamics.id"            : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__DYNAMICS_2__ID']),
 }
 
 ESC_REGISTER_VALUES_3 = {
@@ -73,11 +74,11 @@ ESC_REGISTER_VALUES_3 = {
     "id_in_esc_group"                   : uavcan.primitive.array.Natural16_1_0(2),
     "ctl_dir"                           : uavcan.primitive.array.Integer64_1_0(1),
 
-    "uavcan.pub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(2364),
-    "uavcan.pub.feedback.id"            : uavcan.primitive.array.Natural16_1_0(2365),
-    "uavcan.pub.power.id"               : uavcan.primitive.array.Natural16_1_0(2366),
-    "uavcan.pub.status.id"              : uavcan.primitive.array.Natural16_1_0(2467),
-    "uavcan.pub.dynamics.id"            : uavcan.primitive.array.Natural16_1_0(2468),
+    "uavcan.pub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__ESC_HEARTBEAT_3__ID']),
+    "uavcan.pub.feedback.id"            : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__FEEDBACK_3__ID']),
+    "uavcan.pub.power.id"               : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__POWER_3__ID']),
+    "uavcan.pub.status.id"              : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__STATUS_3__ID']),
+    "uavcan.pub.dynamics.id"            : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__DYNAMICS_3__ID']),
 }
 
 ESC_REGISTER_VALUES_4 = {
@@ -85,41 +86,42 @@ ESC_REGISTER_VALUES_4 = {
     "id_in_esc_group"                   : uavcan.primitive.array.Natural16_1_0(3),
     "ctl_dir"                           : uavcan.primitive.array.Integer64_1_0(1),
 
-    "uavcan.pub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(2344),
-    "uavcan.pub.feedback.id"            : uavcan.primitive.array.Natural16_1_0(2345),
-    "uavcan.pub.power.id"               : uavcan.primitive.array.Natural16_1_0(2346),
-    "uavcan.pub.status.id"              : uavcan.primitive.array.Natural16_1_0(2447),
-    "uavcan.pub.dynamics.id"            : uavcan.primitive.array.Natural16_1_0(2448),
+    "uavcan.pub.esc_heartbeat.id"       : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__ESC_HEARTBEAT_4__ID']),
+    "uavcan.pub.feedback.id"            : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__FEEDBACK_4__ID']),
+    "uavcan.pub.power.id"               : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__POWER_4__ID']),
+    "uavcan.pub.status.id"              : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__STATUS_4__ID']),
+    "uavcan.pub.dynamics.id"            : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__DYNAMICS_4__ID']),
 }
 
 AUTOPILOT_REGISTER_VALUES = {
-    "uavcan.pub.note_response.id"       : uavcan.primitive.array.Natural16_1_0(2341),
-    "uavcan.pub.setpoint.id"            : uavcan.primitive.array.Natural16_1_0(2342),
-    "uavcan.pub.readiness.id"           : uavcan.primitive.array.Natural16_1_0(2343),
+    "uavcan.node.id"                    : uavcan.primitive.array.Natural16_1_0(42),
+    "uavcan.pub.note_response.id"       : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__NOTE_RESPONSE__ID']),
+    "uavcan.pub.setpoint.id"            : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__SETPOINT__ID']),
+    "uavcan.pub.readiness.id"           : uavcan.primitive.array.Natural16_1_0(os.environ['UAVCAN__PUB__READINESS__ID']),
 
-    "uavcan.pub.esc_heartbeat.0.id"     : uavcan.primitive.array.Natural16_1_0(2344),
-    "uavcan.sub.feedback.0.id"          : uavcan.primitive.array.Natural16_1_0(2345),
-    "uavcan.sub.power.0.id"             : uavcan.primitive.array.Natural16_1_0(2346),
-    "uavcan.sub.status.0.id"            : uavcan.primitive.array.Natural16_1_0(2447),
-    "uavcan.sub.dynamics.0.id"          : uavcan.primitive.array.Natural16_1_0(2448),
+    "uavcan.sub.esc_heartbeat.0.id"     : ESC_REGISTER_VALUES_1["uavcan.pub.esc_heartbeat.id"],
+    "uavcan.sub.feedback.0.id"          : ESC_REGISTER_VALUES_1["uavcan.pub.feedback.id"],
+    "uavcan.sub.power.0.id"             : ESC_REGISTER_VALUES_1["uavcan.pub.power.id"],
+    "uavcan.sub.status.0.id"            : ESC_REGISTER_VALUES_1["uavcan.pub.status.id"],
+    "uavcan.sub.dynamics.0.id"          : ESC_REGISTER_VALUES_1["uavcan.pub.dynamics.id"],
 
-    "uavcan.pub.esc_heartbeat.1.id"     : uavcan.primitive.array.Natural16_1_0(2374),
-    "uavcan.sub.feedback.1.id"          : uavcan.primitive.array.Natural16_1_0(2375),
-    "uavcan.sub.power.1.id"             : uavcan.primitive.array.Natural16_1_0(2376),
-    "uavcan.sub.status.1.id"            : uavcan.primitive.array.Natural16_1_0(2477),
-    "uavcan.sub.dynamics.1.id"          : uavcan.primitive.array.Natural16_1_0(2478),
+    "uavcan.sub.esc_heartbeat.1.id"     : ESC_REGISTER_VALUES_2["uavcan.pub.esc_heartbeat.id"],
+    "uavcan.sub.feedback.1.id"          : ESC_REGISTER_VALUES_2["uavcan.pub.feedback.id"],
+    "uavcan.sub.power.1.id"             : ESC_REGISTER_VALUES_2["uavcan.pub.power.id"],
+    "uavcan.sub.status.1.id"            : ESC_REGISTER_VALUES_2["uavcan.pub.status.id"],
+    "uavcan.sub.dynamics.1.id"          : ESC_REGISTER_VALUES_2["uavcan.pub.dynamics.id"],
 
-    "uavcan.pub.esc_heartbeat.2.id"     : uavcan.primitive.array.Natural16_1_0(2364),
-    "uavcan.sub.feedback.2.id"          : uavcan.primitive.array.Natural16_1_0(2365),
-    "uavcan.sub.power.2.id"             : uavcan.primitive.array.Natural16_1_0(2366),
-    "uavcan.sub.status.2.id"            : uavcan.primitive.array.Natural16_1_0(2467),
-    "uavcan.sub.dynamics.2.id"          : uavcan.primitive.array.Natural16_1_0(2468),
+    "uavcan.sub.esc_heartbeat.2.id"     : ESC_REGISTER_VALUES_3["uavcan.pub.esc_heartbeat.id"],
+    "uavcan.sub.feedback.2.id"          : ESC_REGISTER_VALUES_3["uavcan.pub.feedback.id"],
+    "uavcan.sub.power.2.id"             : ESC_REGISTER_VALUES_3["uavcan.pub.power.id"],
+    "uavcan.sub.status.2.id"            : ESC_REGISTER_VALUES_3["uavcan.pub.status.id"],
+    "uavcan.sub.dynamics.2.id"          : ESC_REGISTER_VALUES_3["uavcan.pub.dynamics.id"],
 
-    "uavcan.pub.esc_heartbeat.3.id"     : uavcan.primitive.array.Natural16_1_0(2344),
-    "uavcan.sub.feedback.3.id"          : uavcan.primitive.array.Natural16_1_0(2345),
-    "uavcan.sub.power.3.id"             : uavcan.primitive.array.Natural16_1_0(2346),
-    "uavcan.sub.status.3.id"            : uavcan.primitive.array.Natural16_1_0(2447),
-    "uavcan.sub.dynamics.3.id"          : uavcan.primitive.array.Natural16_1_0(2448),
+    "uavcan.sub.esc_heartbeat.3.id"     : ESC_REGISTER_VALUES_4["uavcan.pub.esc_heartbeat.id"],
+    "uavcan.sub.feedback.3.id"          : ESC_REGISTER_VALUES_4["uavcan.pub.feedback.id"],
+    "uavcan.sub.power.3.id"             : ESC_REGISTER_VALUES_4["uavcan.pub.power.id"],
+    "uavcan.sub.status.3.id"            : ESC_REGISTER_VALUES_4["uavcan.pub.status.id"],
+    "uavcan.sub.dynamics.3.id"          : ESC_REGISTER_VALUES_4["uavcan.pub.dynamics.id"],
 }
 
 
@@ -223,12 +225,14 @@ class ServerNode:
 
         for index in range(MAX_NUMBER_OF_REGISTERS):
             # Try until get empty register name that means previous register was the last one
+            await asyncio.sleep(0.1)
             register_name = await self._rpc_client_register_list._call(index)
             if len(register_name) == 0:
                 break
 
             # Read or write register value by his name
             set_value = registers_values[register_name] if register_name in registers_values else None
+            await asyncio.sleep(0.1)
             read_value, data_type = await self._rpc_client_register_access._call(register_name, set_value)
             if read_value is None:
                 print("ERR: RegisterAccess has been failed")
@@ -237,16 +241,11 @@ class ServerNode:
             # Store register value
             self.register_table[register_name] = RegisterTableCell(index, data_type, read_value)
 
-            if set_value is None:
-                print("{:<3} {:<30} {:<10} {:<5}".format("{}.".format(index),
-                                                         register_name,
-                                                         data_type,
-                                                         read_value))
-            else:
-                log_warn("{:<3} {:<30} {:<10} {:<5}".format("{}.".format(index),
-                                                            register_name,
-                                                            data_type,
-                                                            read_value))
+            log_func = print if set_value is None else log_warn
+            log_func("{:<3} {:<30} {:<10} {:<5}".format("{}.".format(index),
+                                                        register_name,
+                                                        data_type,
+                                                        str(read_value)))
 
     async def _start_pub_and_sub(self):
         """
@@ -284,9 +283,9 @@ class ServerNode:
             self.subs[sub].init()
 
         self.pubs = {
-            "note_response": NoteResponsePublisher(self._node, enable_by_default=True),        # 2341  dynamic
-            "setpoint"     : SetpointPublisher(self._node, enable_by_default=True),            # 2342  dynamic
-            "readiness"    : ReadinessPublisher(self._node, enable_by_default=True),           # 2343  dynamic
+            # "note_response": NoteResponsePublisher(self._node, enable_by_default=True),        # 2341  dynamic
+            # "setpoint"     : SetpointPublisher(self._node, enable_by_default=True),            # 2342  dynamic
+            # "readiness"    : ReadinessPublisher(self._node, enable_by_default=True),           # 2343  dynamic
         }
 
     def _close(self) -> None:

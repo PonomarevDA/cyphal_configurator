@@ -49,18 +49,20 @@ class RpcClientRegisterList(BaseRpcClient):
         super().__init__(node, destination_node_id, uavcan.register.List_1_0)
 
     async def _call(self, index, num_of_max_attempts=10):
-        for attemp_counter in range(num_of_max_attempts):
+        for attemp_counter in range(1, num_of_max_attempts + 1):
+            print("\rRegList {}/{}".format(attemp_counter, num_of_max_attempts), flush=True, end = '')
             register_name = await self.call_register_list(index)
 
             if register_name is not None:
                 if len(register_name) == 0:
-                    return []
-                else:
-                    return register_name
-            elif attemp_counter == num_of_max_attempts - 1:
-                print("ERR: RegisterList has been failed {} times".format(num_of_max_attempts))
-                return []
-            await asyncio.sleep(0.01)
+                    register_name = []
+                break
+            elif attemp_counter == num_of_max_attempts:
+                print("")
+                register_name = []
+                break
+            await asyncio.sleep(0.1)
+        print("\r", end = '')
         return register_name
 
     async def call_register_list(self, index=0):
@@ -85,17 +87,23 @@ class RpcClientRegisterAccess(BaseRpcClient):
         else:
             req = RpcClientRegisterAccess.make_write_request(register_name, set_value)
 
-        for attempt in range(num_of_max_attempts):
+        for attempt in range(1, num_of_max_attempts + 1):
+            print("\rRegAccess {}/{}".format(attempt, num_of_max_attempts), flush=True, end = '')
             response = await self._rpc_client.call(req)
             if response is not None:
                 break
             await asyncio.sleep(0.1)
+        if attempt != num_of_max_attempts:
+            print("\r", end = '')
+        else:
+            print("")
+
 
         data_type = "Unknown"
         if response is not None:
             read_value = response[0].value
             if read_value.natural16 is not None:
-                read_value = read_value.natural16.value[0]
+                read_value = read_value.natural16.value
                 data_type = "natural16"
             elif read_value.string is not None:
                 read_value = np_array_to_string(read_value.string.value)
@@ -116,7 +124,10 @@ class RpcClientRegisterAccess(BaseRpcClient):
                 print("ERR: RegisterAccess unknown data_type", read_value)
                 read_value = None
         else:
-            print("ERR: RegisterAccess response is None")
+            print("ERR: RegisterAccess response on {} is None, attempt={}/{}".format(\
+                register_name_string,
+                attempt,
+                num_of_max_attempts))
             read_value = None
 
         return read_value, data_type

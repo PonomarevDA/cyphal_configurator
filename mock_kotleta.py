@@ -90,6 +90,7 @@ class KotletaMock:
             self.pubs["power"].set_value(current=0.1  + 0.1*self.esc_idx,
                                          voltage=12.1 + 0.1*self.esc_idx)
             self.pubs["dynamics"].set_value(radian_per_second=10 + 10*self.esc_idx)
+            self.pubs["status"].set_motor_temperature(273.2 + 10*self.esc_idx)
 
             for sub in self.subs:
                 self.subs[sub].init()
@@ -111,6 +112,9 @@ def log_data(kotletas):
     voltages = [0, 0, 0, 0]
     currents = [0, 0, 0, 0]
 
+    crnt_sp_rx_counter = kotletas[0].subs["setpoint"].update_max_time_between_msgs()
+    crnt_readiness_rx_counter = kotletas[0].subs["readiness"].update_max_time_between_msgs()
+
     for kotleta in kotletas:
         esc_idx = kotleta.esc_idx
         setpoints[esc_idx] = kotleta.subs["setpoint"].value[esc_idx]
@@ -118,12 +122,15 @@ def log_data(kotletas):
         voltages[esc_idx] = kotleta.pubs["power"].msg.value.voltage.volt
         currents[esc_idx] = kotleta.pubs["power"].msg.value.current.ampere
 
-    print("{} {}={}, {}={}, {}={}, {}={}".format(\
+
+
+    print("{} {}={}, {}={}, {}={}, {}={}, {}/{}".format(\
             datetime.now().strftime("%H:%M:%S"),
             "sp", setpoints,
             "rd", readiness,
             "volt", voltages,
-            "crnt", currents
+            "crnt", currents,
+            crnt_sp_rx_counter, crnt_readiness_rx_counter,
         )
     )
 
