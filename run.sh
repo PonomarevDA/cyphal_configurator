@@ -15,7 +15,7 @@ server          Scans network to check online nodes, perform reading and
                 writing to their registers and save and reboot device if
                 write operation is successfull
 gui_esc_panel   The same as server + gui
-mock_kotleta    Mock esc
+mock_vehicle    Mock vehicle that has 4 esc nodes
 help            Print this message and exit"
 }
 
@@ -46,9 +46,9 @@ gui_esc_panel() {
     python3.7 gui_esc_panel.py
 }
 
-mock_kotleta() {
+mock_vehicle() {
     configurate
-    python3.7 mock_kotleta.py
+    python3.7 mock_vehicle.py
 }
 
 server() {
@@ -67,8 +67,8 @@ elif [ "$1" = "server" ]; then
     server
 elif [ "$1" = "gui_esc_panel" ]; then
     gui_esc_panel
-elif [ "$1" = "mock_kotleta" ]; then
-    mock_kotleta
+elif [ "$1" = "mock_vehicle" ]; then
+    mock_vehicle
 else
     print_help
 fi
