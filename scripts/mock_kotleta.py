@@ -112,8 +112,8 @@ def log_data(kotletas):
     voltages = [0, 0, 0, 0]
     currents = [0, 0, 0, 0]
 
-    crnt_sp_rx_counter = kotletas[0].subs["setpoint"].update_max_time_between_msgs()
-    crnt_readiness_rx_counter = kotletas[0].subs["readiness"].update_max_time_between_msgs()
+    crnt_sp_rx_counter = kotletas[0].subs["setpoint"].get_number_of_rx_msgs()
+    crnt_readiness_rx_counter = kotletas[0].subs["readiness"].get_number_of_rx_msgs()
 
     for kotleta in kotletas:
         esc_idx = kotleta.esc_idx
