@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.7
 import rospy
-import mock_vehicle
+import asyncio
+from mock_vehicle import CyphalNodeCreator
 
 from std_msgs.msg import Bool
 from sensor_msgs.msg import Imu, Joy, MagneticField
@@ -15,6 +16,9 @@ class BaseComponent:
 class EscFeedbackComponent(BaseComponent):
     def __init__(self, params=None) -> None:
         self.esc_idx = params["esc_idx"]
+        creator = CyphalNodeCreator()
+        self.cyphal_node = creator.create_node("esc", 50 + params["esc_idx"], params)
+        self.cyphal_node.init()
     def _cyphal_actuator_cb(self):
         pass
     def _cyphal_readiness_cb(self):
@@ -154,9 +158,12 @@ class StandardVtolSystem(QuadcopterSystem):
         # todo: add internal combustion engine
         # todo: add fuel tank
 
-if __name__ == "__main__":
+async def main():
     rospy.init_node('vehicle_ros', anonymous=True)
     quadcopter_system = QuadcopterSystem()
-
     while not rospy.is_shutdown():
         rospy.sleep(0.001)
+        await asyncio.sleep(0.001)
+
+if __name__ == "__main__":
+    asyncio.run(main())
