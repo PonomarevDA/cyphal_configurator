@@ -4,7 +4,7 @@ import asyncio
 import logging
 import pyuavcan
 import pathlib
-from subscribers import SetpointSubscriber, ReadinessSubscriber, HearbeatSubscriber
+from subscribers import CyphalSubscriberCreator
 from publishers import CyphalPublisherCreator
 from datetime import datetime
 
@@ -95,11 +95,11 @@ class EscCyphalNode(BaseCyphalNode):
         self.pubs["status"].set_motor_temperature(temperature)
 
     def get_setpoint(self):
-        sp = self.subs["setpoint"].value[self.esc_idx]
+        sp = self.subs["setpoint"].get_value()[self.esc_idx]
         return round(sp, 2) if sp is not None else None
 
     def get_readiness(self):
-        return self.subs["readiness"].value
+        return self.subs["readiness"].get_value()
 
     def get_voltage(self):
         voltage = self.pubs["power"].msg.value.voltage.volt
@@ -110,10 +110,11 @@ class EscCyphalNode(BaseCyphalNode):
         return round(current, 1) if current is not None else None
 
     async def _init_pub_and_sub(self):
+        sub_creator = CyphalSubscriberCreator(self._node)
         self.subs = {
-            "heartbeat"         : HearbeatSubscriber(self._node),
-            "setpoint"          : SetpointSubscriber(self._node),
-            "readiness"         : ReadinessSubscriber(self._node),
+            "heartbeat" : sub_creator.create("heartbeat"),
+            "setpoint"  : sub_creator.create("setpoint"),
+            "readiness" : sub_creator.create("readiness"),
         }
 
         pub_creator = CyphalPublisherCreator(self._node)
