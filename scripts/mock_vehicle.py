@@ -5,9 +5,8 @@ import logging
 import pyuavcan
 import pathlib
 from subscribers import SetpointSubscriber, ReadinessSubscriber, HearbeatSubscriber
-from publishers import DynamicsPublisher, PowerPublisher, FeedbackPublisher, StatusPublisher
+from publishers import CyphalPublisherCreator
 from datetime import datetime
-from enum import Enum
 
 
 compiled_dsdl_dir = pathlib.Path(__file__).resolve().parent / "compile_output"
@@ -29,17 +28,14 @@ except (ImportError, AttributeError):
 REGISTER_FILE = "allocation_table.db"
 
 
-class NodeType(Enum):
-    NODE_TYPE_ESC = 0
-    NODE_TYPE_BARO = 1
-    NODE_TYPE_MAG = 2
-    NODE_TYPE_GPS = 3
-    NODE_TYPE_IMU = 4
-    NODE_TYPE_ARISPEED = 4
-
-
-class BaseNode:
-    def __init__(self, node_id) -> None:
+class BaseCyphalNode:
+    """
+    Each node should support at least following interface:
+    type    PortId  Data type
+    pub     7509    uavcan.node.Heartbeat.1.0
+    pub     7510    uavcan.node.port.List.0.1
+    """
+    def __init__(self, node_id, params=None) -> None:
         self.node_id = node_id
         self.subs = {}
         self.pubs = {}
@@ -78,10 +74,20 @@ class BaseNode:
         self._node.close()
 
 
-class EscNode(BaseNode):
-    def __init__(self, node_id, esc_idx=0) -> None:
+class EscCyphalNode(BaseCyphalNode):
+    """
+    Node specific interface
+    type    PortId  Register    Data type                                           Pub rate
+    sub     dyn     setpoint    reg.udral.service.actuator.common.sp.Scalar_0_1     ~200
+    sub     dyn     readiness   reg.udral.service.common.Readiness_0_1              -20
+    pub     dyn     feedback_x  reg.udral.service.actuator.common.Feedback_0_1      0.1
+    pub     dyn     power_x     reg.udral.physics.electricity.PowerTs_0_1           0.1
+    pub     dyn     status_x    reg.udral.service.actuator.common.Status_0_1        0.1
+    pub     dyn     dynamics_x  reg.udral.physics.dynamics.rotation.PlanarTs_0_1    0.1
+    """
+    def __init__(self, node_id, params=None) -> None:
         super().__init__(node_id)
-        self.esc_idx = esc_idx
+        self.esc_idx = params["esc_idx"]
 
     async def set_value(self, current, voltage, radian_per_second, temperature):
         self.pubs["power"].set_value(current=current, voltage=voltage)
@@ -110,21 +116,42 @@ class EscNode(BaseNode):
             "readiness"         : ReadinessSubscriber(self._node),
         }
 
+        pub_creator = CyphalPublisherCreator(self._node)
         self.pubs = {
-            "dynamics"  : DynamicsPublisher(self._node, name="dynamics_{}".format(self.esc_idx + 1)),
-            "power"     : PowerPublisher(self._node,    name="power_{}".format(self.esc_idx + 1)),
-            "feedback"  : FeedbackPublisher(self._node, name="feedback_{}".format(self.esc_idx + 1)),
-            "status"    : StatusPublisher(self._node,   name="status_{}".format(self.esc_idx + 1)),
+            "dynamics"  : pub_creator.create("dynamics", "dynamics_{}".format(self.esc_idx + 1)),
+            "power"     : pub_creator.create("power",    "power_{}".format(self.esc_idx + 1)),
+            "feedback"  : pub_creator.create("feedback", "feedback_{}".format(self.esc_idx + 1)),
+            "status"    : pub_creator.create("status",   "status_{}".format(self.esc_idx + 1)),
         }
 
 
-class Vehicle:
+class CyphalNodeCreator:
+    NODE_TYPE_BY_NAME = {
+        "esc"           : EscCyphalNode,
+        # "baro"          : BaroCyphalNode,
+        # "mag"           : MagCyphalNode,
+        # "gps"           : GpsCyphalNode,
+        # "imu"           : ImuCyphalNode,
+        # "air"           : AirCyphalNode,
+    }
     def __init__(self) -> None:
+        pass
+
+    def create_node(self, name, node_id, params=None):
+        component = None
+        if name in CyphalNodeCreator.NODE_TYPE_BY_NAME:
+            component = CyphalNodeCreator.NODE_TYPE_BY_NAME[name](node_id, params)
+        return component
+
+
+class QuadcopterSystem:
+    def __init__(self) -> None:
+        creator = CyphalNodeCreator()
         self.nodes = [
-            EscNode(node_id=50, esc_idx=0),
-            EscNode(node_id=51, esc_idx=1),
-            EscNode(node_id=52, esc_idx=2),
-            EscNode(node_id=53, esc_idx=3),
+            creator.create_node("esc", node_id=50, params={"esc_idx" : 0}),
+            creator.create_node("esc", node_id=51, params={"esc_idx" : 1}),
+            creator.create_node("esc", node_id=52, params={"esc_idx" : 2}),
+            creator.create_node("esc", node_id=53, params={"esc_idx" : 3}),
         ]
 
     def init(self):
@@ -156,14 +183,14 @@ class Vehicle:
                 esc.get_current()))
 
 async def main():
-    vehicle = Vehicle()
-    vehicle.init()
+    quadcopter_system = QuadcopterSystem()
+    quadcopter_system.init()
     await asyncio.sleep(1)
-    await vehicle.set_values()
+    await quadcopter_system.set_values()
 
     while True:
         await asyncio.sleep(2)
-        vehicle.log_data_once()
+        quadcopter_system.log_data_once()
 
 if __name__ == "__main__":
     logging.root.setLevel(logging.INFO)

@@ -150,3 +150,23 @@ class StatusPublisher(BasePublisher):
     def set_motor_temperature(self, temperature_kelvin):
         self.msg.motor_temperature.kelvin = temperature_kelvin
         pass
+
+
+class CyphalPublisherCreator:
+    PUB_TYPE_BY_NAME = {
+        "note_response"     : NoteResponsePublisher,
+        "setpoint"          : SetpointPublisher,
+        "readiness"         : ReadinessPublisher,
+        "dynamics"          : DynamicsPublisher,
+        "power"             : PowerPublisher,
+        "feedback"          : FeedbackPublisher,
+        "status"            : StatusPublisher,
+    }
+    def __init__(self, node) -> None:
+        self.node = node
+
+    def create(self, pub_name, reg_name, params=None):
+        component = None
+        if pub_name in CyphalPublisherCreator.PUB_TYPE_BY_NAME:
+            component = CyphalPublisherCreator.PUB_TYPE_BY_NAME[pub_name](self.node, reg_name)
+        return component
