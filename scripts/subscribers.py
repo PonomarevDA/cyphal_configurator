@@ -53,6 +53,10 @@ class BaseSubscriber:
         self._sub = self._node.make_subscriber(self._data_type, self._name)
         self._sub.receive_in_background(self.callback)
 
+    def register_callback(self, callback):
+        sub = self._node.make_subscriber(self._data_type, self._name)
+        sub.receive_in_background(callback)
+
     def get_value(self):
         return self._msg.value
 

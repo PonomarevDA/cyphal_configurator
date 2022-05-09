@@ -8,18 +8,11 @@ from subscribers import CyphalSubscriberCreator
 from publishers import CyphalPublisherCreator
 from datetime import datetime
 
-
-compiled_dsdl_dir = pathlib.Path(__file__).resolve().parent / "compile_output"
-sys.path.insert(0, str(compiled_dsdl_dir))
-
 try:
+    compiled_dsdl_dir = pathlib.Path(__file__).resolve().parent / "compile_output"
+    sys.path.insert(0, str(compiled_dsdl_dir))
     import pyuavcan.application
     import uavcan.node
-    import uavcan.node.port.List_0_1
-
-    import uavcan.node.ExecuteCommand_1_0
-    import uavcan.register.Access_1_0
-    import uavcan.register.List_1_0
 except (ImportError, AttributeError):
     logging.warning("There is no compiled DSDL in {}.".format(compiled_dsdl_dir))
     exit()
@@ -36,9 +29,12 @@ class BaseCyphalNode:
     pub     7510    uavcan.node.port.List.0.1
     """
     def __init__(self, node_id, params=None) -> None:
-        self.node_id = node_id
-        self.subs = {}
-        self.pubs = {}
+        self._node_id = node_id
+        self._subs = {}
+        self._pubs = {}
+        self._sub_table = {}
+        self._pub_table = {}
+        self._params = params
 
     def init(self):
         asyncio.create_task(self._main()) 
@@ -51,11 +47,11 @@ class BaseCyphalNode:
             )
             self._node = pyuavcan.application.make_node(node_info, REGISTER_FILE)
             self._node.heartbeat_publisher.mode = uavcan.node.Mode_1_0.OPERATIONAL
-            self._node.heartbeat_publisher.vendor_specific_status_code = self.node_id
+            self._node.heartbeat_publisher.vendor_specific_status_code = self._node_id
             self._node.start()
             await self._init_pub_and_sub()
-            for sub in self.subs:
-                self.subs[sub].init()
+            for sub in self._subs:
+                self._subs[sub].init()
             while True:
                 await asyncio.sleep(1)
         except KeyboardInterrupt:
@@ -64,7 +60,19 @@ class BaseCyphalNode:
             self._close()
 
     async def _init_pub_and_sub(self):
-        pass
+        sub_creator = CyphalSubscriberCreator(self._node)
+        for sub_name in self._sub_table:
+            sub = sub_creator.create(sub_name, self._sub_table[sub_name])
+            if sub is None:
+                import rospy
+                rospy.logerr(f"{self._node_id} error: implementation of {sub_name} is not exist!")
+            else:
+                self._subs[sub_name] = sub
+                # self._subs[sub_name].register_callback(None)
+
+        pub_creator = CyphalPublisherCreator(self._node)
+        for pub_name in self._pub_table:
+            self._pubs[sub_name] = pub_creator.create(pub_name, self._pub_table[pub_name])
 
     def _close(self) -> None:
         """
@@ -75,55 +83,38 @@ class BaseCyphalNode:
 
 
 class EscCyphalNode(BaseCyphalNode):
-    """
-    Node specific interface
-    type    PortId  Register    Data type                                           Pub rate
-    sub     dyn     setpoint    reg.udral.service.actuator.common.sp.Scalar_0_1     ~200
-    sub     dyn     readiness   reg.udral.service.common.Readiness_0_1              -20
-    pub     dyn     feedback_x  reg.udral.service.actuator.common.Feedback_0_1      0.1
-    pub     dyn     power_x     reg.udral.physics.electricity.PowerTs_0_1           0.1
-    pub     dyn     status_x    reg.udral.service.actuator.common.Status_0_1        0.1
-    pub     dyn     dynamics_x  reg.udral.physics.dynamics.rotation.PlanarTs_0_1    0.1
-    """
     def __init__(self, node_id, params=None) -> None:
         super().__init__(node_id)
         self.esc_idx = params["esc_idx"]
 
+        self._sub_table["hearbeat"] = "heartbeat"
+        self._sub_table["setpoint"] = "setpoint"
+        self._sub_table["readiness"] = "readiness"
+
+        self._pub_table["dynamics"] = "dynamics_{}".format(self.esc_idx + 1)
+        self._pub_table["power"] = "power_{}".format(self.esc_idx + 1)
+        self._pub_table["feedback"] = "feedback_{}".format(self.esc_idx + 1)
+        self._pub_table["status"] = "status_{}".format(self.esc_idx + 1)
+
     async def set_value(self, current, voltage, radian_per_second, temperature):
-        self.pubs["power"].set_value(current=current, voltage=voltage)
-        self.pubs["dynamics"].set_value(radian_per_second=radian_per_second)
-        self.pubs["status"].set_motor_temperature(temperature)
+        self._pubs["power"].set_value(current=current, voltage=voltage)
+        self._pubs["dynamics"].set_value(radian_per_second=radian_per_second)
+        self._pubs["status"].set_motor_temperature(temperature)
 
     def get_setpoint(self):
-        sp = self.subs["setpoint"].get_value()[self.esc_idx]
+        sp = self._subs["setpoint"].get_value()[self.esc_idx]
         return round(sp, 2) if sp is not None else None
 
     def get_readiness(self):
-        return self.subs["readiness"].get_value()
+        return self._subs["readiness"].get_value()
 
     def get_voltage(self):
-        voltage = self.pubs["power"].msg.value.voltage.volt
+        voltage = self._pubs["power"].msg.value.voltage.volt
         return round(voltage, 1) if voltage is not None else None
 
     def get_current(self):
-        current = self.pubs["power"].msg.value.current.ampere
+        current = self._pubs["power"].msg.value.current.ampere
         return round(current, 1) if current is not None else None
-
-    async def _init_pub_and_sub(self):
-        sub_creator = CyphalSubscriberCreator(self._node)
-        self.subs = {
-            "heartbeat" : sub_creator.create("heartbeat"),
-            "setpoint"  : sub_creator.create("setpoint"),
-            "readiness" : sub_creator.create("readiness"),
-        }
-
-        pub_creator = CyphalPublisherCreator(self._node)
-        self.pubs = {
-            "dynamics"  : pub_creator.create("dynamics", "dynamics_{}".format(self.esc_idx + 1)),
-            "power"     : pub_creator.create("power",    "power_{}".format(self.esc_idx + 1)),
-            "feedback"  : pub_creator.create("feedback", "feedback_{}".format(self.esc_idx + 1)),
-            "status"    : pub_creator.create("status",   "status_{}".format(self.esc_idx + 1)),
-        }
 
 
 class CyphalNodeCreator:
