@@ -6,8 +6,8 @@ import logging
 from time import sleep
 import pyuavcan
 import pathlib
-from subscribers import EscHearbeatSubscriber, DynamicsSubscriber, PortListSubscriber, \
-                        HearbeatSubscriber, StatusSubscriber, PowerSubscriber, FeedbackSubscriber
+from subscribers import EscHeartbeatSubscriber, DynamicsSubscriber, PortListSubscriber, \
+                        HeartbeatSubscriber, StatusSubscriber, PowerSubscriber, FeedbackSubscriber
 from publishers import NoteResponsePublisher, SetpointPublisher, ReadinessPublisher
 
 from rpc_clients import RpcClientRegisterList, RpcClientRegisterAccess, RpcClientExecuteCommand
@@ -252,32 +252,32 @@ class ServerNode:
         Initialize all subscribers and publishers which are avaliable on the destination node.
         """
         self.subs = {
-            "heartbeat"         : HearbeatSubscriber(self._node),                               # 7509  fixed
-            "port_list"         : PortListSubscriber(self._node),                               # 7510  fixed
+            "heartbeat"         : HeartbeatSubscriber(self._node),                           # 7509  fixed
+            "port_list"         : PortListSubscriber(self._node),                           # 7510  fixed
 
-            "esc_heartbeat_1"   : EscHearbeatSubscriber(self._node, name="esc_heartbeat_1"),    # empty on kotleta
-            "feedback_1"        : FeedbackSubscriber(self._node, name="feedback_1"),            # specific for node
-            "power_1"           : PowerSubscriber(self._node, name="power_1"),                  # specific for node
-            "status_1"          : StatusSubscriber(self._node, name="status_1"),                # specific for node
-            "dynamics_1"        : DynamicsSubscriber(self._node, name="dynamics_1"),            # specific for node
+            "esc_heartbeat_1"   : EscHeartbeatSubscriber(self._node, "esc_heartbeat_1"),     # empty on kotleta
+            "feedback_1"        : FeedbackSubscriber(self._node, "feedback_1"),             # specific for node
+            "power_1"           : PowerSubscriber(self._node, "power_1"),                   # specific for node
+            "status_1"          : StatusSubscriber(self._node, "status_1"),                 # specific for node
+            "dynamics_1"        : DynamicsSubscriber(self._node, "dynamics_1"),             # specific for node
 
-            "esc_heartbeat_2"   : EscHearbeatSubscriber(self._node, name="esc_heartbeat_2"),    # empty on kotleta
-            "feedback_2"        : FeedbackSubscriber(self._node, name="feedback_2"),            # specific for node
-            "power_2"           : PowerSubscriber(self._node, name="power_2"),                  # specific for node
-            "status_2"          : StatusSubscriber(self._node, name="status_2"),                # specific for node
-            "dynamics_2"        : DynamicsSubscriber(self._node, name="dynamics_2"),            # specific for node
+            "esc_heartbeat_2"   : EscHeartbeatSubscriber(self._node, "esc_heartbeat_2"),     # empty on kotleta
+            "feedback_2"        : FeedbackSubscriber(self._node, "feedback_2"),             # specific for node
+            "power_2"           : PowerSubscriber(self._node, "power_2"),                   # specific for node
+            "status_2"          : StatusSubscriber(self._node, "status_2"),                 # specific for node
+            "dynamics_2"        : DynamicsSubscriber(self._node, "dynamics_2"),             # specific for node
 
-            "esc_heartbeat_3"   : EscHearbeatSubscriber(self._node, name="esc_heartbeat_3"),    # empty on kotleta
-            "feedback_3"        : FeedbackSubscriber(self._node, name="feedback_3"),            # specific for node
-            "power_3"           : PowerSubscriber(self._node, name="power_3"),                  # specific for node
-            "status_3"          : StatusSubscriber(self._node, name="status_3"),                # specific for node
-            "dynamics_3"        : DynamicsSubscriber(self._node, name="dynamics_3"),            # specific for node
+            "esc_heartbeat_3"   : EscHeartbeatSubscriber(self._node, "esc_heartbeat_3"),     # empty on kotleta
+            "feedback_3"        : FeedbackSubscriber(self._node, "feedback_3"),             # specific for node
+            "power_3"           : PowerSubscriber(self._node, "power_3"),                   # specific for node
+            "status_3"          : StatusSubscriber(self._node, "status_3"),                 # specific for node
+            "dynamics_3"        : DynamicsSubscriber(self._node, "dynamics_3"),             # specific for node
 
-            "esc_heartbeat_4"   : EscHearbeatSubscriber(self._node, name="esc_heartbeat_4"),    # empty on kotleta
-            "feedback_4"        : FeedbackSubscriber(self._node, name="feedback_4"),            # specific for node
-            "power_4"           : PowerSubscriber(self._node, name="power_4"),                  # specific for node
-            "status_4"          : StatusSubscriber(self._node, name="status_4"),                # specific for node
-            "dynamics_4"        : DynamicsSubscriber(self._node, name="dynamics_4"),            # specific for node
+            "esc_heartbeat_4"   : EscHeartbeatSubscriber(self._node, "esc_heartbeat_4"),     # empty on kotleta
+            "feedback_4"        : FeedbackSubscriber(self._node, "feedback_4"),             # specific for node
+            "power_4"           : PowerSubscriber(self._node, "power_4"),                   # specific for node
+            "status_4"          : StatusSubscriber(self._node, "status_4"),                 # specific for node
+            "dynamics_4"        : DynamicsSubscriber(self._node, "dynamics_4"),             # specific for node
         }
         for sub in self.subs:
             self.subs[sub].init()
