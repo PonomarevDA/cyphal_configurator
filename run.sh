@@ -16,6 +16,7 @@ server          Scans network to check online nodes, perform reading and
                 write operation is successfull
 gui_esc_panel   The same as server + gui
 mock_vehicle    Mock vehicle that has 4 esc nodes
+ros             Mock with ROS
 help            Print this message and exit"
 }
 
@@ -56,6 +57,11 @@ server() {
     python3 server.py
 }
 
+ros() {
+    configurate
+    roslaunch cyphal_tools run_cyphal.launch
+}
+
 cd "$(dirname "$0")"/scripts
 set -e
 
@@ -69,6 +75,8 @@ elif [ "$1" = "gui_esc_panel" ]; then
     gui_esc_panel
 elif [ "$1" = "mock_vehicle" ]; then
     mock_vehicle
+elif [ "$1" = "ros" ]; then
+    ros
 else
     print_help
 fi
