@@ -32,7 +32,7 @@ accomodate() {
 }
 
 compile() {
-    configurate
+    source config.sh
     yakut compile $REG_DATA_TYPE_PATH -O $YAKUT_COMPILE_OUTPUT
 }
 
@@ -43,17 +43,17 @@ pnp() {
 
 gui_esc_panel() {
     configurate
-    python3.7 gui_esc_panel.py
+    python3 gui_esc_panel.py
 }
 
 mock_vehicle() {
     configurate
-    python3.7 mock_vehicle.py
+    python3 mock_vehicle.py
 }
 
 server() {
     configurate
-    python3.7 server.py
+    python3 server.py
 }
 
 cd "$(dirname "$0")"/scripts

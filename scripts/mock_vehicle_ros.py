@@ -3,9 +3,8 @@ import rospy
 import asyncio
 from mock_vehicle import CyphalNodeCreator
 
-from std_msgs.msg import Bool
-from sensor_msgs.msg import Imu, Joy, MagneticField
-from uavcan_msgs.msg import StaticTemperature, StaticPressure, RawAirData, Fix
+from std_msgs.msg import Bool, Float32
+from sensor_msgs.msg import Imu, Joy, MagneticField, NavSatFix
 
 
 class BaseComponent:
@@ -54,8 +53,8 @@ class EscGroupComponent(BaseComponent):
 class BaroComponent(BaseComponent):
     def __init__(self, params=None) -> None:
         super().__init__()
-        rospy.Subscriber(params["temperature_topic"], StaticTemperature, self._ros_static_temperature_cb)
-        rospy.Subscriber(params["pressure_topic"],    StaticPressure,    self._ros_static_pressure_cb)
+        rospy.Subscriber(params["temperature_topic"], Float32, self._ros_static_temperature_cb)
+        rospy.Subscriber(params["pressure_topic"],    Float32,    self._ros_static_pressure_cb)
     def _ros_static_temperature_cb(self, msg):
         pass
     def _ros_static_pressure_cb(self, msg):
@@ -73,7 +72,7 @@ class MagComponent(BaseComponent):
 class GpsComponent(BaseComponent):
     def __init__(self, params=None) -> None:
         super().__init__()
-        rospy.Subscriber(params["gps_topic"], Fix, self._ros_gps_cb)
+        rospy.Subscriber(params["gps_topic"], NavSatFix, self._ros_gps_cb)
     def _ros_gps_cb(self, msg):
         pass
 
@@ -88,7 +87,7 @@ class ImuComponent(BaseComponent):
 class AirDataComponent(BaseComponent):
     def __init__(self, params=None) -> None:
         super().__init__()
-        rospy.Subscriber(params["air_topic"], RawAirData, self._ros_static_pressure_cb)
+        rospy.Subscriber(params["air_topic"], Float32, self._ros_static_pressure_cb)
     def _ros_static_pressure_cb(self, msg):
         pass
 
