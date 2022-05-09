@@ -19,49 +19,37 @@ class EscFeedbackComponent(BaseComponent):
         creator = CyphalNodeCreator()
         self.esc_node = creator.create_node("esc", 50 + params["esc_idx"], params)
         self.esc_node.init()
-    def get_setpoint(self):
-        return self.esc_node.get_setpoint()
-    def get_readiness(self):
-        return self.esc_node.get_readiness()
-    def _cyphal_actuator_cb(self):
-        pass
-    def _cyphal_readiness_cb(self):
-        pass
 
 
 class EscGroupComponent(BaseComponent):
     def __init__(self, params=None) -> None:
         super().__init__()
-        setpoint_reg = params["setpoint_reg"]
-        readiness_reg = params["readiness_reg"]
         actuators_topic = params["actuators_topic"]
         arm_topic = params["arm_topic"]
 
+        self._actuators_msg = Joy()
+        self._arm_msg = Bool()
         self.nested_components = []
         for esc_idx in range(params["esc_amount"]):
             params["esc_idx"] = esc_idx
             self.nested_components.append(EscFeedbackComponent(params))
         self.ros_setpoint_pub = rospy.Publisher(actuators_topic, Joy, queue_size=10)
         self.ros_readiness_pub = rospy.Publisher(arm_topic, Bool, queue_size=10)
+        self.nested_components[0].esc_node._subs["setpoint"].register_callback(self._cyphal_actuator_cb)
+        self.nested_components[0].esc_node._subs["readiness"].register_callback(self._cyphal_readiness_cb)
 
     def get_setpoint(self):
-        sp = []
-        for component in self.nested_components:
-            sp.append(component.get_setpoint())
-        return sp
+        return self._actuators_msg.axes
 
     def get_readiness(self):
-        if len(self.nested_components) > 0:
-            return self.nested_components[0].get_readiness()
+        return self._arm_msg.data
 
     def _cyphal_actuator_cb(self, cyphal_msg):
-        ros_msg = Joy()
-        ros_msg.axes = [cyphal_msg].value
-        self.ros_setpoint_pub.publish(ros_msg)
+        self._actuators_msg.axes = cyphal_msg.value
+        self.ros_setpoint_pub.publish(self._actuators_msg)
 
-    def _cyphal_readiness_cb(self):
-        pass
-
+    def _cyphal_readiness_cb(self, cyphal_msg):
+        self._arm_msg.data = cyphal_msg.value
 
 class BaroComponent(BaseComponent):
     def __init__(self, params=None) -> None:

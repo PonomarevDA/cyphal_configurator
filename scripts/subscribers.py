@@ -1,4 +1,5 @@
 #!/usr/bin/env python3.7
+from subprocess import call
 import sys
 import pathlib
 import time
@@ -43,6 +44,7 @@ class BaseSubscriber:
         self._data_type = data_type
         self._name = name
         self._msg = data_type()
+        self._app_callbacks = []
 
         self.msg_counter = 0
         self.recv_timestamp_ms = 0
@@ -53,9 +55,8 @@ class BaseSubscriber:
         self._sub = self._node.make_subscriber(self._data_type, self._name)
         self._sub.receive_in_background(self.callback)
 
-    def register_callback(self, callback):
-        sub = self._node.make_subscriber(self._data_type, self._name)
-        sub.receive_in_background(callback)
+    def register_callback(self, app_callback):
+        self._app_callbacks.append(app_callback)
 
     def get_value(self):
         return self._msg.value
@@ -69,6 +70,9 @@ class BaseSubscriber:
         return max_time_between_msgs
 
     async def callback(self, msg, _):
+        for app_cb in self._app_callbacks:
+            app_cb(msg)
+
         self._msg = msg
         self.msg_counter += 1
         self.time_between_msgs = time.time() - self.recv_timestamp_ms

@@ -28,51 +28,41 @@ class BaseCyphalNode:
     pub     7509    uavcan.node.Heartbeat.1.0
     pub     7510    uavcan.node.port.List.0.1
     """
-    def __init__(self, node_id, params=None) -> None:
-        self._node_id = node_id
+    def __init__(self, node_id, sub_table, pub_table, params=None) -> None:
+        node_info = uavcan.node.GetInfo_1_0.Response(
+                software_version=uavcan.node.Version_1_0(major=1, minor=0),
+                name="vehicle_mock",
+            )
+        self._node = pyuavcan.application.make_node(node_info, REGISTER_FILE)
+        self._node.heartbeat_publisher.mode = uavcan.node.Mode_1_0.OPERATIONAL
+        self._node.heartbeat_publisher.vendor_specific_status_code = node_id
+        self._node.start()
+
+        sub_creator = CyphalSubscriberCreator(self._node)
         self._subs = {}
+        for sub_name in sub_table:
+            sub = sub_creator.create(sub_name, sub_table[sub_name])
+            if sub is not None:
+                self._subs[sub_name] = sub
+        for sub in self._subs:
+            self._subs[sub].init()
+
+        pub_creator = CyphalPublisherCreator(self._node)
         self._pubs = {}
-        self._sub_table = {}
-        self._pub_table = {}
-        self._params = params
+        for pub_name in pub_table:
+            self._pubs[pub_name] = pub_creator.create(pub_name, pub_table[pub_name])
 
     def init(self):
         asyncio.create_task(self._main()) 
 
     async def _main(self) -> None:
         try:
-            node_info = uavcan.node.GetInfo_1_0.Response(
-                software_version=uavcan.node.Version_1_0(major=1, minor=0),
-                name="vehicle_mock",
-            )
-            self._node = pyuavcan.application.make_node(node_info, REGISTER_FILE)
-            self._node.heartbeat_publisher.mode = uavcan.node.Mode_1_0.OPERATIONAL
-            self._node.heartbeat_publisher.vendor_specific_status_code = self._node_id
-            self._node.start()
-            await self._init_pub_and_sub()
-            for sub in self._subs:
-                self._subs[sub].init()
             while True:
                 await asyncio.sleep(1)
         except KeyboardInterrupt:
             pass
         finally:
             self._close()
-
-    async def _init_pub_and_sub(self):
-        sub_creator = CyphalSubscriberCreator(self._node)
-        for sub_name in self._sub_table:
-            sub = sub_creator.create(sub_name, self._sub_table[sub_name])
-            if sub is None:
-                import rospy
-                rospy.logerr(f"{self._node_id} error: implementation of {sub_name} is not exist!")
-            else:
-                self._subs[sub_name] = sub
-                # self._subs[sub_name].register_callback(None)
-
-        pub_creator = CyphalPublisherCreator(self._node)
-        for pub_name in self._pub_table:
-            self._pubs[sub_name] = pub_creator.create(pub_name, self._pub_table[pub_name])
 
     def _close(self) -> None:
         """
@@ -84,17 +74,19 @@ class BaseCyphalNode:
 
 class EscCyphalNode(BaseCyphalNode):
     def __init__(self, node_id, params=None) -> None:
-        super().__init__(node_id)
         self.esc_idx = params["esc_idx"]
-
-        self._sub_table["hearbeat"] = "heartbeat"
-        self._sub_table["setpoint"] = "setpoint"
-        self._sub_table["readiness"] = "readiness"
-
-        self._pub_table["dynamics"] = "dynamics_{}".format(self.esc_idx + 1)
-        self._pub_table["power"] = "power_{}".format(self.esc_idx + 1)
-        self._pub_table["feedback"] = "feedback_{}".format(self.esc_idx + 1)
-        self._pub_table["status"] = "status_{}".format(self.esc_idx + 1)
+        sub_table = {
+            "hearbeat"  : "hearbeat",
+            "setpoint"  : "setpoint",
+            "readiness" : "readiness",
+        }
+        pub_table = {
+            "dynamics"  : "dynamics_{}".format(self.esc_idx + 1),
+            "power"     : "power_{}".format(self.esc_idx + 1),
+            "feedback"  : "feedback_{}".format(self.esc_idx + 1),
+            "status"    : "status_{}".format(self.esc_idx + 1),
+        }
+        super().__init__(node_id, sub_table, pub_table)
 
     async def set_value(self, current, voltage, radian_per_second, temperature):
         self._pubs["power"].set_value(current=current, voltage=voltage)
@@ -145,8 +137,6 @@ class QuadcopterSystem:
             creator.create_node("esc", node_id=52, params={"esc_idx" : 2}),
             creator.create_node("esc", node_id=53, params={"esc_idx" : 3}),
         ]
-
-    def init(self):
         for node in self.nodes:
             node.init()
 
@@ -176,7 +166,6 @@ class QuadcopterSystem:
 
 async def main():
     quadcopter_system = QuadcopterSystem()
-    quadcopter_system.init()
     await asyncio.sleep(1)
     await quadcopter_system.set_values()
 
