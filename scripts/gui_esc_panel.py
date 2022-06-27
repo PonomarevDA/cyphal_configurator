@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QSlider, QVBoxLayout, QHBoxLayout, QGridLayout, QSpinBox, QHBoxLayout
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QTimer, QThread
-from server import ServerNodeFrontend
+from configurator import ServerNodeFrontend
 
 
 NUMBER_OF_ESC = 4

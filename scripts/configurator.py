@@ -199,14 +199,14 @@ class ServerNode:
                 write_registers_values = {}
                 await self._read_and_write_registers(write_registers_values, avaliable_node)
 
-        print("Scanning is done.")
+        print("Configuration is done.")
 
         while True:
             await asyncio.sleep(10)
 
     async def _scan_network(self, scanning_time_sec=2):
         nodes_avaliable = set()
-        print("Scanning network...")
+        print("Listening the network...")
         for sec_remaining in range(scanning_time_sec, 0, -1):
             nodes_avaliable = await self.subs["heartbeat"].get_avaliable_nodes()
             print("{}... Avaliable nodes: {}".format(sec_remaining, nodes_avaliable))
@@ -302,11 +302,11 @@ class ServerNodeFrontend(ServerNode):
 
     def get_voltage(self, esc_idx=0):
         sub_name = "power_{}".format(esc_idx + 1)
-        return self.subs[sub_name].voltage if sub_name in self.subs else None
+        return self.subs[sub_name].get_voltage() if sub_name in self.subs else None
 
     def get_current(self, esc_idx=0):
         sub_name = "power_{}".format(esc_idx + 1)
-        return self.subs[sub_name].current if sub_name in self.subs else None
+        return self.subs[sub_name].get_current() if sub_name in self.subs else None
 
     def get_readiness(self, esc_idx=0):
         sub_name = "feedback_{}".format(esc_idx + 1)
