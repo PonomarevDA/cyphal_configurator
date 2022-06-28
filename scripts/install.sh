@@ -1,15 +1,8 @@
 #!/bin/bash
 
-sudo apt-get install python3.7 python3.7-dev
+sudo apt-get install -y can-utils socat net-tools udev iproute2
+sudo apt-get install -y python3 python3-dev
 
-python3.7 -m pip install --upgrade pip
-
-# necessary for main libraries
-python3.7 -m pip install cython scipy
-
-# main libraries
-python3.7 -m pip install pyuavcan yakut
-
-# esc_panel
-python3.7 -m pip install pyqt5
+python3 -m pip install --upgrade pip
+python3 -m pip install cython scipy pyuavcan yakut pyqt5
 

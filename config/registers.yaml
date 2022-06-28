@@ -1,0 +1,75 @@
+42: &ardupilot
+  uavcan.node.id:                 42
+  uavcan.pub.note_response.id:    2341
+  uavcan.pub.readiness.id:        2343
+  uavcan.pub.setpoint.id:         2342
+
+  uavcan.sub.dynamics.0.id:       2378
+  uavcan.sub.dynamics.1.id:       2358
+  uavcan.sub.dynamics.2.id:       2368
+  uavcan.sub.dynamics.3.id:       2348
+
+  uavcan.sub.esc_heartbeat.0.id:  2374
+  uavcan.sub.esc_heartbeat.1.id:  2354
+  uavcan.sub.esc_heartbeat.2.id:  2364
+  uavcan.sub.esc_heartbeat.3.id:  2344
+
+  uavcan.sub.feedback.0.id:       2375
+  uavcan.sub.feedback.1.id:       2355
+  uavcan.sub.feedback.2.id:       2365
+  uavcan.sub.feedback.3.id:       2345
+
+  uavcan.sub.power.0.id:          2376
+  uavcan.sub.power.1.id:          2356
+  uavcan.sub.power.2.id:          2366
+  uavcan.sub.power.3.id:          2346
+
+  uavcan.sub.status.0.id:         2377
+  uavcan.sub.status.1.id:         2357
+  uavcan.sub.status.2.id:         2367
+  uavcan.sub.status.3.id:         2347
+
+123: &prototype_esc # front right, CCW
+  uavcan.sub.note_response.id:    2341
+  uavcan.sub.setpoint.id:         2342
+  uavcan.sub.readiness.id:        2343
+  ttl_milliseconds:               100
+  control_mode_rpm:               false
+
+  id_in_esc_group:                0
+  ctl_dir:                        0
+  uavcan.pub.esc_heartbeat.id":   2374
+  uavcan.pub.feedback.id:         2375
+  uavcan.pub.power.id:            2376
+  uavcan.pub.status.id:           2377
+  uavcan.pub.dynamics.id:         2378
+
+116: # rear left, CCW
+  <<: *prototype_esc
+  id_in_esc_group:                1
+  ctl_dir:                        1
+  uavcan.pub.esc_heartbeat.id":   2354
+  uavcan.pub.feedback.id:         2355
+  uavcan.pub.power.id:            2356
+  uavcan.pub.status.id:           2357
+  uavcan.pub.dynamics.id:         2358
+
+124: # front left, CW
+  <<: *prototype_esc
+  id_in_esc_group:                2
+  ctl_dir:                        1
+  uavcan.pub.esc_heartbeat.id":   2364
+  uavcan.pub.feedback.id:         2365
+  uavcan.pub.power.id:            2366
+  uavcan.pub.status.id:           2367
+  uavcan.pub.dynamics.id:         2368
+
+125: # rear right, CW
+  <<: *prototype_esc
+  id_in_esc_group:                3
+  ctl_dir:                        1
+  uavcan.pub.esc_heartbeat.id":   2344
+  uavcan.pub.feedback.id:         2345
+  uavcan.pub.power.id:            2346
+  uavcan.pub.status.id:           2347
+  uavcan.pub.dynamics.id:         2348

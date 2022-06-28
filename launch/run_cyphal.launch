@@ -1,3 +1,0 @@
-<launch>
-    <node pkg="cyphal_tools" type="mock_vehicle_ros.py" name="mock_vehicle_ros" required="true" />
-</launch>
