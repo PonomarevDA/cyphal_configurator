@@ -1,26 +1,77 @@
 # Ardupilot & kotleta20 configuration
 
-Here we have few scripts to configure [kotleta20 esc](http://www.holybro.com/product/kotleta20/) and [Ardupilot](https://ardupilot.org/) autopilot via [Cyphal protocol](https://opencyphal.org/).
+This repository has an example of [kotleta20 esc](http://www.holybro.com/product/kotleta20/) and [Ardupilot](https://ardupilot.org/) autopilot [Cyphal](https://opencyphal.org/) configuration based on [yakut](https://github.com/OpenCyphal/yakut).
 
-These scripts allow to automatically set registers values of autopilot and ESCs.
+It automatically:
+1. Configure all required environment variables
+2. Compile DSDL based on public regulated data types
+3. Create SLCAN based on CAN sniffer
+4. Configure devices registers
+5. Reboot devices (if they support this feature)
 
 ## Content
-  - [1. Interface description](#1-interface-description)
-    - [1.1. Common interface](#11-common-interface)
-    - [1.2. Kotleta20 specific interface](#12-kotleta20-specific-interface)
-    - [1.3. Ardupilot specific interface](#13-ardupilot-specific-interface)
-  - [2. Before start](#2-before-start)
-  - [3. Usage](#3-usage)
-    - [3.1. Manual usage](#31-manual-usage)
-    - [3.2. Docker usage](#32-docker-usage)
+  - [1. Before start](#1-before-start)
+  - [2. Usage](#2-usage)
+  - [3. Configurable registers](#3-configurable-registers)
+  - [4. Flight examples](#4-flight-examples)
 
-## 1. Interface description
+## 1. Before start
 
-The goal of configuration is to set the desired registers values of autopilot and ESCs. This process is defined by the device interfaces. Let's study them below.
+You need to connect CAN-sniffer (for example [this one](https://github.com/InnopolisAero/inno_uavcan_node_binaries/blob/master/doc/programmer_sniffer/README.md)) with autopilot & ESCs CAN bus network.
 
-> This section is just a reminder page. Read it only if you are going to develop your own configuration.
+An example of connection is shown below.
 
-### 1.1. Common interface
+> It is expected that your ESC has an external power supply.
+
+> It's not recommended to perform configuration when your motors are equipped with propellers.
+
+![connection](img/connection.png?raw=true "connection")
+
+
+## 2. Usage
+
+> It is expected that all your nodes already have allocated node-ID. If they are not, run a plug-and-play node-ID allocator  before continuing. Check `yakut` documentation. 
+
+There are 2 options. You can either configure from docker or install everything on your environment and run it.
+
+> It is tested only with docker. If you choose the first option, you may need to manually solve some issues.
+
+**2.1. Manual usage**
+
+Run following commands to start the configuration:
+
+```bash
+git clone https://github.com/PonomarevDA/kotleta_tools --recursive
+git submodule update --init --recursive
+cd kotleta_tools
+./scripts/install.sh
+./scripts/setup.sh
+```
+
+**2.2. Docker usage**
+
+Run following commands to start the configuration:
+
+```bash
+git clone https://github.com/PonomarevDA/kotleta_tools --recursive
+git submodule update --init --recursive
+cd kotleta_tools
+./scripts/docker.sh build
+./scripts/docker.sh interactive
+./scripts/setup.sh
+```
+
+All the same, but everything is already installed in the docker.
+
+
+## 3. Configurable registers
+
+Configurable registers are listed in the [registers.yaml](config/registers.yaml).
+
+<details>
+  <summary>(Cheat sheet) Click here to expand the devices interface.</summary>
+
+**3.1. Common interface**
 
 Below you can see the table with basic any node must-have interface.
 
@@ -35,7 +86,7 @@ Below you can see the table with basic any node must-have interface.
 
 > These subjects doesn't require to have a specific register because their port id is fixed.
 
-### 1.2. Kotleta20 specific interface
+**3.2. Kotleta20 specific interface**
 
 Kotleta20 has several registers. Here is the table with registers which describe the esc's interface.
 
@@ -52,7 +103,7 @@ Kotleta20 has several registers. Here is the table with registers which describe
 
 > All port id in the table above are not fixed. The shown values are the default values from [registers.yaml](config/registers.yaml) file. If you want to customize the configuration, edit this yaml file.
 
-### 1.3. Ardupilot specific interface
+**3.3. Ardupilot specific interface**
 
 Ardupilot has several registers. Here is the table with registers which describe the Ardupilot's interface.
 
@@ -69,55 +120,10 @@ Ardupilot has several registers. Here is the table with registers which describe
 
 > All port id in the table above are not fixed. The shown values are the default values from [registers.yaml](config/registers.yaml) script. If you want to customize the configuration, edit this yaml file.
 
+</details>
 
-## 2. Before start
+## 4. Flight examples
 
-You need to connect CAN-sniffer (for example [this one](https://github.com/InnopolisAero/inno_uavcan_node_binaries/blob/master/doc/programmer_sniffer/README.md)) with autopilot & ESCs CAN bus network.
-
-An example of connection is shown below.
-
-> It is expected that your ESC has an external power supply.
-
-> It's not recommended to perform configuration when your motors are equipped with propellers.
-
-![connection](img/connection.png?raw=true "connection")
-
-
-## 3. Usage
-
-There are 2 options. You can either configure from docker or install everything on your environment and run it.
-
-### 3.1. Manual usage
-
-Run following commands to start the configuration:
-
-```bash
-git clone https://github.com/PonomarevDA/kotleta_tools --recursive
-git submodule update --init --recursive
-cd kotleta_tools
-./scripts/install.sh
-./scripts/setup.sh
-```
-
-The `setup.sh` script:
-
-1. Configure all required environment variables
-2. Compile DSDL
-3. Create SLCAN
-4. Configure devices registers
-5. Reboot devices
-
-### 3.2. Docker usage
-
-Run following commands to start the configuration:
-
-```bash
-git clone https://github.com/PonomarevDA/kotleta_tools --recursive
-git submodule update --init --recursive
-cd kotleta_tools
-./scripts/docker.sh build
-./scripts/docker.sh interactive
-./scripts/setup.sh
-```
-
-All the same, but everything is already installed in the docker.
+Few flight example videos are listed below:
+- https://youtu.be/7vLIsBtI9Hs
+- https://youtu.be/FE_kxwhicWM
