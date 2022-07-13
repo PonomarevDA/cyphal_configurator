@@ -1,6 +1,6 @@
 # Ardupilot & kotleta20 configuration
 
-This repository has an example of [kotleta20 esc](http://www.holybro.com/product/kotleta20/) and [Ardupilot](https://ardupilot.org/) autopilot [Cyphal](https://opencyphal.org/) configuration based on [yakut](https://github.com/OpenCyphal/yakut).
+This repository has a script for [kotleta20 esc](http://www.holybro.com/product/kotleta20/) and [Ardupilot](https://ardupilot.org/) autopilot [Cyphal](https://opencyphal.org/) configuration based on [yakut](https://github.com/OpenCyphal/yakut).
 
 It automatically:
 1. Configure all required environment variables
@@ -9,15 +9,9 @@ It automatically:
 4. Configure devices registers
 5. Reboot devices (if they support this feature)
 
-## Content
-  - [1. Before start](#1-before-start)
-  - [2. Usage](#2-usage)
-  - [3. Configurable registers](#3-configurable-registers)
-  - [4. Flight examples](#4-flight-examples)
-
 ## 1. Before start
 
-You need to connect CAN-sniffer (for example [this one](https://github.com/InnopolisAero/inno_uavcan_node_binaries/blob/master/doc/programmer_sniffer/README.md)) with autopilot & ESCs CAN bus network.
+You need to connect CAN-sniffer (for example [this one](https://innopolisaero.github.io/inno_uavcan_node_binaries/guide/programmer_sniffer.html#uavcan-sniffer-and-programmer)) with autopilot & ESCs CAN bus network.
 
 An example of connection is shown below.
 
