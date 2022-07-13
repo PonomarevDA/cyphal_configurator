@@ -4,22 +4,17 @@
 # ./scripts/create_slcan_from_serial.sh - use automatic device path search
 # ./scripts/create_slcan_from_serial.sh /dev/ttyACMx - use user device path
 
-cd "$(dirname "$0")"
-
 # 1. Set tty settings
-if [ $# == 1 ]
-then
+if [ $# == 1 ]; then
     DEV_PATH=$1
 else
-    source get_sniffer_symlink.sh
+    source $(dirname "$0")/get_sniffer_symlink.sh
     DEV_PATH=$DEV_PATH_SYMLINK
 fi
-if [ -z $DEV_PATH ]
-then
+if [ -z $DEV_PATH ]; then
     echo "Can't find expected tty device."
     exit 1
 fi
-BAUD_RATE=1000000
 
 # 2. Run daemon slcand from can-utils - link serial interface with a virtual CAN device
 # It will get name slcan name base
@@ -29,6 +24,7 @@ BAUD_RATE=1000000
 #   -S $BAUD_RATE   option means uart baud rate
 #   $DEV_PATH       position argument means port name
 # sudo slcand -o -s8 -t hw -S $BAUD_RATE $DEV_PATH
+BAUD_RATE=1000000
 sudo slcand -o -c -f -s8 -t hw -S $BAUD_RATE $DEV_PATH
 
 
