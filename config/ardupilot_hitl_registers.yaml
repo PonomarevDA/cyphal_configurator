@@ -1,0 +1,43 @@
+42: &ardupilot
+  uavcan.node.id:                 42
+  uavcan.pub.note_response.id:    2341
+  uavcan.pub.readiness.id:        2343
+  uavcan.pub.setpoint.id:         2342
+
+  uavcan.sub.dynamics.0.id:       2378
+  uavcan.sub.dynamics.1.id:       2358
+  uavcan.sub.dynamics.2.id:       2368
+  uavcan.sub.dynamics.3.id:       2348
+
+  uavcan.sub.esc_heartbeat.0.id:  2374
+  uavcan.sub.esc_heartbeat.1.id:  2354
+  uavcan.sub.esc_heartbeat.2.id:  2364
+  uavcan.sub.esc_heartbeat.3.id:  2344
+
+  uavcan.sub.feedback.0.id:       2375
+  uavcan.sub.feedback.1.id:       2355
+  uavcan.sub.feedback.2.id:       2365
+  uavcan.sub.feedback.3.id:       2345
+
+  uavcan.sub.power.0.id:          2376
+  uavcan.sub.power.1.id:          2356
+  uavcan.sub.power.2.id:          2366
+  uavcan.sub.power.3.id:          2346
+
+  uavcan.sub.status.0.id:         2377
+  uavcan.sub.status.1.id:         2357
+  uavcan.sub.status.2.id:         2367
+  uavcan.sub.status.3.id:         2347
+
+  uavcan.sub.status.0.id:         2377
+  uavcan.sub.status.1.id:         2357
+  uavcan.sub.status.2.id:         2367
+  uavcan.sub.status.3.id:         2347
+
+  uavcan.sub.accel.id:            2400
+  uavcan.sub.gyro.id:             2401
+  uavcan.sub.mag.id:              2402
+  uavcan.sub.baro.temp.id:        2403
+  uavcan.sub.baro.pres.id:        2404
+  uavcan.sub.gps.yaw.id:          2405
+  uavcan.sub.gps.point.id:        2406
