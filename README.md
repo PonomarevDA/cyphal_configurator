@@ -1,8 +1,6 @@
 # Cyphal configurator
 
-This repository has everything required for [Cyphal](https://opencyphal.org/) registers configuration based on [yakut](https://github.com/OpenCyphal/yakut).
-
-It is mainly dedicated for configuration:
+This repository has everything required for [Cyphal](https://opencyphal.org/) registers configuration based on [yakut](https://github.com/OpenCyphal/yakut) for the following applications:
 - Ardupilot Cyphal with [kotleta20 esc](http://www.holybro.com/product/kotleta20/),
 - Ardupilot Cyphal [HITL simulation](https://github.com/InnopolisAero/innopolis_vtol_dynamics).
 
