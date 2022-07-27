@@ -3,7 +3,7 @@
 # User config
 REPOSITORY_PATH="/catkin_ws/src/cyphal_tools"
 REG_DATA_TYPE_PATH="$REPOSITORY_PATH/public_regulated_data_types/uavcan $REPOSITORY_PATH/public_regulated_data_types/reg/"
-CONFIG_LOCAL_PATH="config/ardupilot_hitl.yaml"
+CONFIG_LOCAL_PATH="config/ardupilot_hitl_registers.yaml"
 
 # Common config
 export YAKUT_COMPILE_OUTPUT="$REPOSITORY_PATH/compile_output"

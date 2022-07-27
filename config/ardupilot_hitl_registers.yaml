@@ -29,11 +29,6 @@
   uavcan.sub.status.2.id:         2367
   uavcan.sub.status.3.id:         2347
 
-  uavcan.sub.status.0.id:         2377
-  uavcan.sub.status.1.id:         2357
-  uavcan.sub.status.2.id:         2367
-  uavcan.sub.status.3.id:         2347
-
   uavcan.sub.accel.id:            2400
   uavcan.sub.gyro.id:             2401
   uavcan.sub.mag.id:              2402
