@@ -29,13 +29,39 @@
   uavcan.sub.status.2.id:         2367
   uavcan.sub.status.3.id:         2347
 
-  uavcan.sub.accel.id:            2400
-  uavcan.sub.gyro.id:             2401
-  uavcan.sub.mag.id:              2402
-  uavcan.sub.baro.temp.id:        2403
-  uavcan.sub.baro.pres.id:        2404
-  uavcan.sub.gps.yaw.id:          2405
-  uavcan.sub.gps.point.id:        2406
-  uavcan.sub.gps.status.id:       2407
-  uavcan.sub.gps.sats.id:         2408
-  uavcan.sub.gps.pdop.id:         2409
+50: &prototype_esc # front right, CCW
+  uavcan.sub.readiness.id:        2343
+  uavcan.sub.setpoint.id:         2342
+  # pwm2_ch:                        -1
+
+  # pwm1_ch:                        0
+
+
+
+  pwm1_ch:                        3
+  pwm2_ch:                        0
+  pwm3_ch:                        1
+  pwm4_ch:                        2
+
+
+# 51: # rear left, CCW
+#   <<: *prototype_esc
+#   pwm1_ch:                        1
+
+# 52: # front left, CW
+#   <<: *prototype_esc
+#   pwm1_ch:                        2
+
+# 53: # rear right, CW
+#   <<: *prototype_esc
+#   pwm1_ch:                        3
+
+71:
+  uavcan.pub.baro.press.id:       0
+  uavcan.pub.baro.temp.id:        0
+  uavcan.pub.gps.yaw.id:          2405
+  uavcan.pub.gps.point.id:        2406
+  uavcan.pub.gps.sats.id:         2407
+  uavcan.pub.gps.status.id:       2408
+  uavcan.pub.gps.pdop.id:         2409
+  uavcan.pub.mag.id:              0
