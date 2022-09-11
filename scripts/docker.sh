@@ -62,9 +62,9 @@ kill_all_containers() {
 
 cd "$(dirname "$0")"
 
-if [ "$1" = "build" ]; then
+if [ \( "$1" = "build" \) -o \( "$1" = "b" \) ]; then
     build_docker_image
-elif [ "$1" = "interactive" ]; then
+elif [ \( "$1" = "interactive" \) -o \( "$1" = "i" \) ]; then
     run_interactive
 elif [ "$1" = "kill" ]; then
     kill_all_containers
