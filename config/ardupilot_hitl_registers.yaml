@@ -36,3 +36,6 @@
   uavcan.sub.baro.pres.id:        2404
   uavcan.sub.gps.yaw.id:          2405
   uavcan.sub.gps.point.id:        2406
+  uavcan.sub.gps.sats.id:         2407
+  uavcan.sub.gps.status.id:       2408
+  uavcan.sub.gps.pdop.id:         2409
