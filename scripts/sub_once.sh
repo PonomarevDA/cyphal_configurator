@@ -1,0 +1,6 @@
+#!/bin/bash
+NODE_ID=51
+REGISTER_BASE=$1
+PORT_ID=$(y r $NODE_ID $REGISTER_BASE.id)
+DATA_TYPE=$(y r $NODE_ID $REGISTER_BASE.type | tr -d '"')
+y sub -N 1 $PORT_ID:$DATA_TYPE
