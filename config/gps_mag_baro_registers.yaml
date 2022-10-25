@@ -1,0 +1,24 @@
+id: 71
+  name: gps_mag_baro
+  uavcan.pub.baro.press.id: 2710
+  uavcan.pub.baro.press.type: uavcan.si.sample.pressure.Scalar
+  uavcan.pub.baro.temp.id: 2711
+  uavcan.pub.baro.temp.type: uavcan.si.sample.temperature.Scalar
+  uavcan.pub.crct.5v.id: 3600
+  uavcan.pub.crct.5v.type: uavcan.si.sample.voltage.Scalar.1.0
+  uavcan.pub.crct.temp.id: 3601
+  uavcan.pub.crct.temp.type: uavcan.si.sample.temperature.Scalar.1.0
+  uavcan.pub.crct.vin.id: 3602
+  uavcan.pub.crct.vin.type: uavcan.si.sample.voltage.Scalar.1.0
+  uavcan.pub.gps.pdop.id: 2712
+  uavcan.pub.gps.pdop.type: uavcan.primitive.scalar.Integer16
+  uavcan.pub.gps.point.id: 2713
+  uavcan.pub.gps.point.type: reg.udral.physics.kinematics.geodetic.PointStateVarTs
+  uavcan.pub.gps.sats.id: 2714
+  uavcan.pub.gps.sats.type: uavcan.primitive.scalar.Integer16
+  uavcan.pub.gps.status.id: 2715
+  uavcan.pub.gps.status.type: uavcan.primitive.scalar.Integer16
+  uavcan.pub.gps.yaw.id: 2716
+  uavcan.pub.gps.yaw.type: uavcan.si.sample.angle.Scalar
+  uavcan.pub.mag.id: 2717
+  uavcan.pub.mag.type: uavcan.si.sample.magnetic_field_strength.Vector3
