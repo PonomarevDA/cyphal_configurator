@@ -1,0 +1,25 @@
+id: 51
+  name: micro
+  pwm1_ch: 0
+  pwm1_def: 1000
+  pwm1_max: 2000
+  pwm1_min: 1000
+  pwm2_ch: 1
+  pwm2_def: 1000
+  pwm2_max: 2000
+  pwm2_min: 1000
+  ttl_ms: 500
+  uavcan.pub.crct.5v.id: 2300
+  uavcan.pub.crct.5v.type: uavcan.si.sample.voltage.Scalar.1.0
+  uavcan.pub.crct.temp.id: 2302
+  uavcan.pub.crct.temp.type: uavcan.si.sample.temperature.Scalar.1.0
+  uavcan.pub.crct.vin.id: 2301
+  uavcan.pub.crct.vin.type: None
+  uavcan.pub.feedback1.id: 2500
+  uavcan.pub.feedback1.type: reg.udral.service.actuator.common.Feedback.0.1
+  uavcan.pub.feedback2.id: 1000
+  uavcan.pub.feedback2.type: reg.udral.service.actuator.common.Feedback.0.1
+  uavcan.sub.readiness.id: 2401
+  uavcan.sub.readiness.type: reg.udral.service.common.Readiness
+  uavcan.sub.setpoint.id: 2400
+  uavcan.sub.setpoint.type: reg.udral.service.actuator.common.sp.Vector4
