@@ -8,4 +8,4 @@ export UAVCAN__CAN__IFACE='socketcan:slcan0'
 export UAVCAN__CAN__MTU=8
 export UAVCAN__NODE__ID=127
 yakut compile $REG_DATA_TYPE_PATH -O $YAKUT_COMPILE_OUTPUT
-/catkin_ws/src/cyphal_tools/scripts/create_slcan_from_serial.sh $CYPHAL_DEV_PATH_SYMLINK
+$SCRIPT_DIR/create_slcan_from_serial.sh $CYPHAL_DEV_PATH_SYMLINK

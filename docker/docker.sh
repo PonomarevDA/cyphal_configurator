@@ -1,9 +1,9 @@
 #!/bin/bash
 
 print_help() {
-   echo "Wrapper under docker API for cyphal_tools.
+   echo "Wrapper under docker API for cyphal_configurator.
 It encapsulates all necessary docker flags and properly handles image versions.
-https://github.com/PonomarevDA/kotleta_tools
+https://github.com/PonomarevDA/cyphal_configurator
 
 usage: docker.sh [command]
 
@@ -14,9 +14,12 @@ kill                            Kill all containers.
 help                            Print this message and exit"
 }
 
+DOCKERFILE_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+REPO_DIR=$DOCKERFILE_DIR/..
+
 setup_image_name_and_version() {
     TAG_NAME=v0.4.0
-    DOCKERHUB_REPOSITOTY=ponomarevda/cyphal_tools
+    DOCKERHUB_REPOSITOTY=ponomarevda/cyphal_configurator
 
     if uname -m | grep -q 'aarch64'; then
         TAG_NAME="$TAG_NAME""arm64"
@@ -33,7 +36,7 @@ setup_cyphal_config() {
     setup_image_name_and_version
     DOCKER_FLAGS="--net=host"
     DOCKER_FLAGS="$DOCKER_FLAGS -v "/tmp/.X11-unix:/tmp/.X11-unix:rw" -e DISPLAY=$DISPLAY -e QT_X11_NO_MITSHM=1)"
-    source ./get_sniffer_symlink.sh
+    source $REPO_DIR/scripts/get_sniffer_symlink.sh
     CYPHAL_DEV_PATH_SYMLINK=$DEV_PATH_SYMLINK
 
     if [ ! -z $CYPHAL_DEV_PATH_SYMLINK ]; then
@@ -48,7 +51,7 @@ setup_cyphal_config() {
 
 build_docker_image() {
     setup_image_name_and_version
-    docker build -t $DOCKER_CONTAINER_NAME ..
+    docker build -f $DOCKERFILE_DIR/Dockerfile -t $DOCKER_CONTAINER_NAME ..
 }
 
 run_interactive() {
