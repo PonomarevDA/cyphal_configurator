@@ -1,6 +1,6 @@
 # Cyphal configurator
 
-This repository has everything required for [Cyphal](https://opencyphal.org/) registers configuration based on [yakut](https://github.com/OpenCyphal/yakut) for the following applications:
+This repository has scripts for [Cyphal](https://opencyphal.org/) registers configuration based on [yakut](https://github.com/OpenCyphal/yakut) for the applications:
 - Ardupilot Cyphal with [kotleta20 esc](http://www.holybro.com/product/kotleta20/),
 - Ardupilot Cyphal [HITL simulation](https://github.com/InnopolisAero/innopolis_vtol_dynamics).
 
@@ -33,11 +33,11 @@ There are 2 options. You can either configure from docker or install everything 
 Run following commands to start the configuration:
 
 ```bash
-git clone https://github.com/PonomarevDA/kotleta_tools --recursive
+git clone https://github.com/PonomarevDA/cyphal_configurator --recursive
 git submodule update --init --recursive
-cd kotleta_tools
+cd cyphal_configurator
 ./scripts/install.sh
-./scripts/setup.sh
+source scripts/setup_base.sh
 ```
 
 **2.2. Docker usage**
@@ -45,12 +45,12 @@ cd kotleta_tools
 Run following commands to start the configuration:
 
 ```bash
-git clone https://github.com/PonomarevDA/kotleta_tools --recursive
+git clone https://github.com/PonomarevDA/cyphal_configurator --recursive
 git submodule update --init --recursive
-cd kotleta_tools
-./scripts/docker.sh build
-./scripts/docker.sh interactive
-./scripts/setup.sh
+cd cyphal_configurator
+./docker/docker.sh build
+./docker/docker.sh interactive
+source scripts/setup_base.sh
 ```
 
 All the same, but everything is already installed in the docker.
