@@ -23,12 +23,12 @@ fi
 #   -t hw           option means UART flow control
 #   -S $BAUD_RATE   option means uart baud rate
 #   $DEV_PATH       position argument means port name
-# sudo slcand -o -s8 -t hw -S $BAUD_RATE $DEV_PATH
+# slcand -o -s8 -t hw -S $BAUD_RATE $DEV_PATH
 BAUD_RATE=1000000
-sudo slcand -o -c -f -s8 -t hw -S $BAUD_RATE $DEV_PATH
+slcand -o -c -f -s8 -t hw -S $BAUD_RATE $DEV_PATH
 
 
-sudo ip link set up slcan0
+ip link set up slcan0
 slcan_attach $DEV_PATH
 
 # Setup SocketCAN queue discipline type
@@ -38,4 +38,4 @@ slcan_attach $DEV_PATH
 # packet in the case of queue overflow. 
 # More about queueing disciplines:
 # https://rtime.felk.cvut.cz/can/socketcan-qdisc-final.pdf
-sudo tc qdisc add dev slcan0 root handle 1: pfifo_head_drop limit 1000
+tc qdisc add dev slcan0 root handle 1: pfifo_head_drop limit 1000

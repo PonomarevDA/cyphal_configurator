@@ -1,8 +1,11 @@
 # Cyphal configurator
 
-This repository has scripts for [Cyphal](https://opencyphal.org/) registers configuration based on [yakut](https://github.com/OpenCyphal/yakut) for the applications:
-- Ardupilot Cyphal with [kotleta20 esc](http://www.holybro.com/product/kotleta20/),
-- Ardupilot Cyphal [HITL simulation](https://github.com/InnopolisAero/innopolis_vtol_dynamics).
+This repository is just a collection of config files and scripts based on [yakut](https://github.com/OpenCyphal/yakut) to configure the following [Cyphal](https://opencyphal.org/) applications:
+
+- Quadcopter based on [Cyphal Ardupilot](https://github.com/PonomarevDA/ardupilot) with [4 Cyphal kotleta20 esc](http://www.holybro.com/product/kotleta20/),
+- Quadcopter based on [Cyphal Ardupilot](https://github.com/PonomarevDA/ardupilot) with [2 Cyphal micro nodes](https://raccoonlabdev.github.io/docs/guide/can_pwm/),
+- Quadcopter based on [Cyphal Ardupilot](https://github.com/PonomarevDA/ardupilot) with [Mini v2 node](https://raccoonlabdev.github.io/docs/guide/can_pwm/) and [Cyphal GPS](https://raccoonlabdev.github.io/docs/guide/gps_mag_baro/),
+- Quadcopter [Cyphal HITL simulation](https://github.com/InnopolisAero/innopolis_vtol_dynamics) based on [Cyphal HITL Ardupilot](https://github.com/PonomarevDA/ardupilot/tree/pr-uavcan-v1-hitl).
 
 But it might be also used as an example/template of configuration for other applications.
 
@@ -30,26 +33,26 @@ There are 2 options. You can either configure from docker or install everything 
 
 **2.1. Manual usage**
 
-Run following commands to start the configuration:
+Run the following commands to start the configuration:
 
 ```bash
 git clone https://github.com/PonomarevDA/cyphal_configurator --recursive
 git submodule update --init --recursive
 cd cyphal_configurator
-./scripts/install.sh
+./scripts/ubuntu_22_04.sh
 source scripts/setup_base.sh
 ```
 
 **2.2. Docker usage**
 
-Run following commands to start the configuration:
+Run the following commands to start the configuration:
 
 ```bash
 git clone https://github.com/PonomarevDA/cyphal_configurator --recursive
 git submodule update --init --recursive
 cd cyphal_configurator
-./docker/docker.sh build
-./docker/docker.sh interactive
+./docker/docker.sh b
+./docker/docker.sh i
 source scripts/setup_base.sh
 ```
 

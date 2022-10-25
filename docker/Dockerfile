@@ -1,17 +1,15 @@
-ARG ROS_DISTRO=noetic
 
-FROM ros:$ROS_DISTRO
+FROM ubuntu:22.04
 LABEL description="Cyphal tools"
 SHELL ["/bin/bash", "-c"]
-WORKDIR /catkin_ws/src/cyphal_tools 
+WORKDIR cyphal_configurator
 
 # 1. Install basic requirements
-RUN apt-get update && apt-get upgrade -y && apt-get install -y git ros-$ROS_DISTRO-catkin python3-pip python3-catkin-tools
-RUN if [[ "$ROS_DISTRO" = "melodic" ]] ; then apt-get install -y python-pip python-catkin-tools ; fi
+RUN apt-get update && apt-get upgrade -y
 
 # 2. Install requirements
-COPY scripts/install.sh scripts/install.sh
-RUN ./scripts/install.sh
+COPY scripts/ubuntu_22_04.sh scripts/ubuntu_22_04.sh
+RUN ./scripts/ubuntu_22_04.sh
 
 # 5. Copy files
 COPY scripts/ scripts/
