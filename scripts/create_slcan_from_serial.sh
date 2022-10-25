@@ -16,6 +16,13 @@ if [ -z $DEV_PATH ]; then
     exit 1
 fi
 
+is_root="$(whoami)"
+if [[ $is_root =~ "root" ]]; then
+    SUDO=""
+else
+    SUDO="sudo"
+fi
+
 # 2. Run daemon slcand from can-utils - link serial interface with a virtual CAN device
 # It will get name slcan name base
 #   -o              option means open command
@@ -25,11 +32,11 @@ fi
 #   $DEV_PATH       position argument means port name
 # slcand -o -s8 -t hw -S $BAUD_RATE $DEV_PATH
 BAUD_RATE=1000000
-slcand -o -c -f -s8 -t hw -S $BAUD_RATE $DEV_PATH
+$SUDO slcand -o -c -f -s8 -t hw -S $BAUD_RATE $DEV_PATH
 
 
-ip link set up slcan0
-slcan_attach $DEV_PATH
+$SUDO ip link set up slcan0
+$SUDO slcan_attach $DEV_PATH
 
 # Setup SocketCAN queue discipline type
 # By default it uses pfifo_fast with queue size 10.
@@ -38,4 +45,4 @@ slcan_attach $DEV_PATH
 # packet in the case of queue overflow. 
 # More about queueing disciplines:
 # https://rtime.felk.cvut.cz/can/socketcan-qdisc-final.pdf
-tc qdisc add dev slcan0 root handle 1: pfifo_head_drop limit 1000
+$SUDO tc qdisc add dev slcan0 root handle 1: pfifo_head_drop limit 1000
