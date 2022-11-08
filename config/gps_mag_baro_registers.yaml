@@ -1,4 +1,6 @@
-id: 71
+71: &gps_mag_baro
+  gps_self_test: 0
+  id: 71
   name: gps_mag_baro
   uavcan.pub.baro.press.id: 2710
   uavcan.pub.baro.press.type: uavcan.si.sample.pressure.Scalar
@@ -20,5 +22,5 @@ id: 71
   uavcan.pub.gps.status.type: uavcan.primitive.scalar.Integer16
   uavcan.pub.gps.yaw.id: 2716
   uavcan.pub.gps.yaw.type: uavcan.si.sample.angle.Scalar
-  uavcan.pub.mag.id: 2717
+  uavcan.pub.mag.id: 65535
   uavcan.pub.mag.type: uavcan.si.sample.magnetic_field_strength.Vector3

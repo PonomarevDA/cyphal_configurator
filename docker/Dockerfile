@@ -15,6 +15,7 @@ RUN ./scripts/ubuntu_22_04.sh
 COPY scripts/ scripts/
 COPY config/ config/
 COPY public_regulated_data_types/ public_regulated_data_types/
+WORKDIR scripts
 
 
 CMD echo "main process has been started"                                        &&  \

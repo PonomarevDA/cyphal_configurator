@@ -1,4 +1,5 @@
-id: 51
+51: &micro
+  id: 51
   name: micro
   pwm1_ch: 0
   pwm1_def: 1000

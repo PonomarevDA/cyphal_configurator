@@ -1,4 +1,5 @@
-id: 50
+50: &mini
+  id: 50
   name: mini
   pwm1_ch: 3
   pwm1_def: 1000
