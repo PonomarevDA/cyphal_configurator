@@ -11,7 +11,7 @@ if [ -z "$NODE_ID" ]; then
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-source $SCRIPT_DIR/setup_base.sh
+source $SCRIPT_DIR/base.sh
 
 y rl $NODE_ID | y rb $NODE_ID > config.json | jq
 

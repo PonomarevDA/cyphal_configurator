@@ -10,7 +10,7 @@ if [ -z "$NODE_ID" ]; then
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/..
-source $SCRIPT_DIR/setup_base.sh
+source $SCRIPT_DIR/base.sh
 
 READINESS_REGISTER_BASE=uavcan.sub.readiness
 READINESS_PORT_ID=$(y r $NODE_ID $READINESS_REGISTER_BASE.id)

@@ -15,6 +15,10 @@ RUN ./scripts/ubuntu_22_04.sh
 COPY scripts/ scripts/
 COPY config/ config/
 COPY public_regulated_data_types/ public_regulated_data_types/
+
+# 4. Compile
+RUN source scripts/base.sh
+
 WORKDIR scripts
 
 

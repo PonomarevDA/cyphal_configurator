@@ -10,7 +10,7 @@ if [ -z "$NODE_ID" ]; then
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/..
-source $SCRIPT_DIR/setup_base.sh
+source $SCRIPT_DIR/base.sh
 
 pdop_id=$(y r $NODE_ID uavcan.pub.gps.pdop.id)
 point_id=$(y r $NODE_ID uavcan.pub.gps.point.id)

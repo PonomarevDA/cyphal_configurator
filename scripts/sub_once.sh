@@ -12,7 +12,7 @@ if [ -z "$REGISTER_BASE" ]; then
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-source $SCRIPT_DIR/setup_base.sh
+source $SCRIPT_DIR/base.sh
 
 PORT_ID=$(y r $NODE_ID $REGISTER_BASE.id)
 DATA_TYPE=$(y r $NODE_ID $REGISTER_BASE.type | tr -d '"')
