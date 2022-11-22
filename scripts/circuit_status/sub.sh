@@ -10,7 +10,7 @@ if [ -z "$NODE_ID" ]; then
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/..
-source $SCRIPT_DIR/base.sh
+source $SCRIPT_DIR/init.sh
 
 crcr_vin_id=$(y r $NODE_ID uavcan.pub.crct.vin.id)
 crcr_5v_id=$(y r $NODE_ID uavcan.pub.crct.5v.id)

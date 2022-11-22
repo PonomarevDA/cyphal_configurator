@@ -40,7 +40,7 @@ git clone https://github.com/PonomarevDA/cyphal_configurator --recursive
 git submodule update --init --recursive
 cd cyphal_configurator
 ./scripts/ubuntu_22_04.sh
-source scripts/base.sh
+source scripts/init.sh
 ```
 
 **2.2. Docker usage**
@@ -53,7 +53,7 @@ git submodule update --init --recursive
 cd cyphal_configurator
 ./docker/docker.sh b
 ./docker/docker.sh i
-source scripts/base.sh
+source scripts/init.sh
 ```
 
 All the same, but everything is already installed in the docker.

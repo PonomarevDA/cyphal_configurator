@@ -10,7 +10,7 @@ if [ -z "$NODE_ID" ]; then
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-source $SCRIPT_DIR/../base.sh
+source $SCRIPT_DIR/../init.sh
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ${SCRIPT_DIR}/readiness_pub.sh $NODE_ID &

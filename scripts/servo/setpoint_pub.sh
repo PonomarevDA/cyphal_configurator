@@ -10,7 +10,7 @@ if [ -z "$NODE_ID" ]; then
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/..
-source $SCRIPT_DIR/base.sh
+source $SCRIPT_DIR/init.sh
 
 SETPOINT_REGISTER_BASE=uavcan.sub.setpoint
 SETPOINT_PORT_ID=$(y r $NODE_ID $SETPOINT_REGISTER_BASE.id)

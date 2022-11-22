@@ -10,7 +10,7 @@ if [ -z "$NODE_ID" ]; then
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/..
-source $SCRIPT_DIR/base.sh
+source $SCRIPT_DIR/init.sh
 
 pdop_id=$(y r $NODE_ID uavcan.pub.gps.pdop.id)
 point_id=$(y r $NODE_ID uavcan.pub.gps.point.id)
@@ -25,6 +25,3 @@ for i in {1..5000}; do
     # y sub -N 1 $status_id:uavcan.primitive.scalar.Integer16
     # y sub -N 1 $yaw_id:uavcan.si.sample.angle.Scalar
 done
-
-
-

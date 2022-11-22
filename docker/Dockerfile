@@ -17,7 +17,7 @@ COPY config/ config/
 COPY public_regulated_data_types/ public_regulated_data_types/
 
 # 4. Compile
-RUN source scripts/base.sh
+RUN source scripts/init.sh
 
 WORKDIR scripts
 

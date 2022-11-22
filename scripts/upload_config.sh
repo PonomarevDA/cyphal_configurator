@@ -12,7 +12,7 @@ if [ -z "$CONFIG_DIR" ]; then
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-source $SCRIPT_DIR/base.sh
+source $SCRIPT_DIR/init.sh
 
 cat $CONFIG_DIR | y rb
 
